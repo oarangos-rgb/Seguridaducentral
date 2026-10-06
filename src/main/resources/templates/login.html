@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión | UCentral Segura</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #E30613;
+            --primary-dark: #b0000a;
+            --secondary-color: #0056b3;
+            --text-dark: #1a1a2e;
+            --text-light: #6c757d;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --gradient-primary: linear-gradient(135deg, #E30613 0%, #ff4757 100%);
+            --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .sidebar {
+            width: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(
+                circle,
+                rgba(255,255,255,0.1) 0%,
+                transparent 70%
+            );
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .sidebar-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .sidebar-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .sidebar h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .sidebar p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+
+        .sidebar-features {
+            margin-top: 40px;
+            text-align: left;
+        }
+
+        .sidebar-feature {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-feature i {
+            font-size: 1.5rem;
+            background: rgba(255,255,255,0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-content {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            background: var(--white);
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        .login-header p {
+            color: var(--text-light);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 30px;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: 0.3s;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-light);
+            transition: 0.3s;
+            z-index: 10;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-color);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .forgot-password {
+            color: var(--primary-color);
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .register-link {
+            text-align: center;
+            color: var(--text-light);
+            margin-top: 20px;
+        }
+
+        .register-link a {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-danger {
+            background: #ffe6e6;
+            color: #c00;
+            border-left: 4px solid #c00;
+        }
+
+        .alert-success {
+            background: #e6ffe6;
+            color: #090;
+            border-left: 4px solid #090;
+        }
+
+        @media (max-width: 968px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-content">
+
+        <div class="sidebar-logo">
+            <i class="fas fa-shield-alt"></i> UCentral Segura
+        </div>
+
+        <h2>¡Bienvenido de vuelta!</h2>
+
+        <p>
+            Accede a tu cuenta para proteger tus datos personales
+            y acceder a recursos exclusivos.
+        </p>
+
+        <div class="sidebar-features">
+
+            <div class="sidebar-feature">
+                <i class="fas fa-check"></i>
+                <span>Guías actualizadas de ciberseguridad</span>
+            </div>
+
+            <div class="sidebar-feature">
+                <i class="fas fa-check"></i>
+                <span>Test de riesgo personalizado</span>
+            </div>
+
+            <div class="sidebar-feature">
+                <i class="fas fa-check"></i>
+                <span>Alertas de fraude en tiempo real</span>
+            </div>
+
+            <div class="sidebar-feature">
+                <i class="fas fa-check"></i>
+                <span>Comunidad de estudiantes seguros</span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+
+    <div class="login-container">
+
+        <a th:href="@{/}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Volver al inicio
+        </a>
+
+        <div class="login-header">
+            <h1>Iniciar Sesión</h1>
+            <p>Ingresa tus credenciales para acceder</p>
+        </div>
+
+        <!-- Mensajes de error/éxito -->
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <!-- Formulario de Login -->
+        <form action="/auth/login" method="post" id="loginForm">
+
+            <div class="form-group">
+                <label for="email">Correo Institucional</label>
+
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+
+                    <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-control"
+                            placeholder="tu.correo@ucentral.edu.co"
+                            required
+                            autocomplete="email">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+
+                    <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="••••••••"
+                            required
+                            autocomplete="current-password">
+
+                    <i
+                            class="fas fa-eye password-toggle"
+                            id="togglePassword"
+                            title="Mostrar/ocultar contraseña">
+                    </i>
+                </div>
+            </div>
+
+            <div class="form-options">
+
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" name="recordar">
+                    <span>Recordarme</span>
+                </label>
+
+                <a th:href="@{/recovery}" class="forgot-password">
+                    ¿Olvidaste tu contraseña?
+                </a>
+
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i>
+                Iniciar Sesión
+            </button>
+
+        </form>
+
+        <div class="register-link">
+            ¿No tienes cuenta?
+            <a th:href="@{/auth/register}">Regístrate aquí</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // Toggle password visibility
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        if (togglePassword && passwordInput) {
+
+            togglePassword.addEventListener('click', function() {
+
+                const type =
+                    passwordInput.getAttribute('type') === 'password'
+                    ? 'text'
+                    : 'password';
+
+                passwordInput.setAttribute('type', type);
+
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+
+            });
+        }
+
+        // Validación del formulario
+        const loginForm = document.getElementById('loginForm');
+
+        if (loginForm) {
+
+            loginForm.addEventListener('submit', function(e) {
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                // Validar correo institucional
+                if (!email.endsWith('@ucentral.edu.co')) {
+
+                    e.preventDefault();
+
+                    alert(
+                        'Por favor usa tu correo institucional @ucentral.edu.co'
+                    );
+
+                    return false;
+                }
+
+                // Validar contraseña
+                if (password.length < 8) {
+
+                    e.preventDefault();
+
+                    alert(
+                        'La contraseña debe tener al menos 8 caracteres'
+                    );
+
+                    return false;
+                }
+
+                // Si todo está bien, el formulario se enviará normalmente
+                console.log('Enviando formulario de login...');
+
+                return true;
+            });
+        }
+    });
+
+</script>
+
+</body>
+</html>
+```

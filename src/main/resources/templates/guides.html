@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guías | UCentral Segura</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #E30613; --primary-dark: #b0000a;
+            --secondary-color: #0056b3; --text-dark: #1a1a2e;
+            --text-light: #6c757d; --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --gradient-primary: linear-gradient(135deg, #E30613 0%, #ff4757 100%);
+            --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--text-dark); }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        .navbar {
+            background: var(--white); padding: 1rem 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed; width: 100%; top: 0; z-index: 1000;
+        }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); }
+        .logo .highlight { color: var(--primary-color); }
+        .nav-menu { display: flex; gap: 30px; }
+        .nav-menu a { font-weight: 600; color: var(--text-dark); transition: 0.3s; }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--primary-color); }
+
+        .guides-header {
+            padding: 150px 0 80px; background: linear-gradient(135deg, #E30613 0%, #ff4757 100%);
+            color: white; text-align: center;
+        }
+        .guides-header h1 { font-size: 3rem; margin-bottom: 20px; }
+        .guides-header p { font-size: 1.2rem; opacity: 0.9; max-width: 700px; margin: 0 auto; }
+
+        .guides-container { padding: 80px 0; }
+        .guide-category { margin-bottom: 60px; }
+        .category-title {
+            font-size: 2rem; color: var(--text-dark); margin-bottom: 30px;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .category-title i { color: var(--primary-color); }
+        .guide-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;
+        }
+        .guide-card {
+            background: var(--white); border-radius: 20px; overflow: hidden;
+            box-shadow: var(--shadow-md); transition: 0.3s; border: 2px solid transparent;
+        }
+        .guide-card:hover {
+            transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--primary-color);
+        }
+        .guide-image {
+            height: 200px; background: linear-gradient(135deg, #0056b3 0%, #003d82 100%);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .guide-image i { font-size: 4rem; color: white; }
+        .guide-content { padding: 30px; }
+        .guide-content h3 { font-size: 1.5rem; margin-bottom: 15px; color: var(--text-dark); }
+        .guide-content p { color: var(--text-light); margin-bottom: 20px; line-height: 1.8; }
+        .guide-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: 20px; border-top: 1px solid var(--light-bg);
+        }
+        .guide-time { color: var(--text-light); font-size: 0.9rem; }
+        .guide-btn { color: var(--primary-color); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .guide-btn:hover { gap: 12px; }
+
+        .tips-section { background: var(--light-bg); padding: 80px 0; }
+        .tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .tip-card {
+            background: var(--white); padding: 30px; border-radius: 15px;
+            display: flex; gap: 20px; align-items: flex-start; box-shadow: var(--shadow-md);
+        }
+        .tip-number {
+            width: 50px; height: 50px; background: var(--gradient-primary);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 1.2rem; flex-shrink: 0;
+        }
+        .tip-content h4 { font-size: 1.2rem; margin-bottom: 10px; color: var(--text-dark); }
+        .tip-content p { color: var(--text-light); line-height: 1.6; }
+
+        .footer {
+            background: var(--text-dark); color: var(--white); padding: 60px 5% 30px;
+        }
+        .footer-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px; max-width: 1200px; margin: 0 auto 40px;
+        }
+        .footer-logo { font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; }
+        .footer p { color: rgba(255,255,255,0.7); margin-bottom: 20px; }
+        .footer h4 { margin-bottom: 20px; }
+        .footer ul li { margin-bottom: 10px; }
+        .footer ul li a { color: rgba(255,255,255,0.7); }
+        .footer-bottom {
+            text-align: center; padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .guide-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo"><i class="fas fa-shield-alt"></i> UCentral<span class="highlight">Segura</span></div>
+        <ul class="nav-menu">
+            <li><a th:href="@{/}">Inicio</a></li>
+            <li><a th:href="@{/guides}" class="active">Guías</a></li>
+            <li><a th:href="@{/test}">Test de Riesgo</a></li>
+            <li><a th:href="@{/report}">Reportar</a></li>
+            <li><a th:href="@{/reportes/seguimiento}">Consultar Reporte</a></li>
+            <li><a th:href="@{/about}">Nosotros</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Guides Header -->
+<section class="guides-header">
+    <div class="container">
+        <h1>Guías de Protección</h1>
+        <p>Aprende a proteger tus datos personales mientras buscas empleo en plataformas digitales</p>
+    </div>
+</section>
+
+<!-- Guides Container -->
+<section class="guides-container">
+    <div class="container">
+        <!-- Category 1 -->
+        <div class="guide-category">
+            <h2 class="category-title"><i class="fas fa-laptop-code"></i> Seguridad en Plataformas de Empleo</h2>
+            <div class="guide-grid">
+                <div class="guide-card">
+                    <div class="guide-image"><i class="fas fa-user-check"></i></div>
+                    <div class="guide-content">
+                        <h3>Cómo Verificar una Empresa</h3>
+                        <p>Aprende a identificar empresas legítimas y detectar ofertas de empleo falsas antes de compartir tu información.</p>
+                        <div class="guide-meta">
+                            <span class="guide-time"><i class="far fa-clock"></i> 10 min</span>
+                            <a th:href="@{/guides/1}" class="guide-btn">Leer <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-card">
+                    <div class="guide-image"><i class="fas fa-file-alt"></i></div>
+                    <div class="guide-content">
+                        <h3>Datos que NO Debes Compartir</h3>
+                        <p>Conoce qué información personal es peligroso compartir en las primeras etapas de un proceso de selección.</p>
+                        <div class="guide-meta">
+                            <span class="guide-time"><i class="far fa-clock"></i> 8 min</span>
+                            <a th:href="@{/guides/2}" class="guide-btn">Leer <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-card">
+                    <div class="guide-image"><i class="fas fa-envelope-open-text"></i></div>
+                    <div class="guide-content">
+                        <h3>Identifica Correos Phishing</h3>
+                        <p>Descubre las señales de alerta en correos electrónicos fraudulentos que buscan robar tus credenciales.</p>
+                        <div class="guide-meta">
+                            <span class="guide-time"><i class="far fa-clock"></i> 12 min</span>
+                            <a th:href="@{/guides/3}" class="guide-btn">Leer <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category 2 -->
+        <div class="guide-category">
+            <h2 class="category-title"><i class="fas fa-shield-virus"></i> Protección de Identidad Digital</h2>
+            <div class="guide-grid">
+                <div class="guide-card">
+                    <div class="guide-image"><i class="fas fa-key"></i></div>
+                    <div class="guide-content">
+                        <h3>Contraseñas Seguras</h3>
+                        <p>Crea contraseñas robustas y aprende a usar gestores de contraseñas para proteger todas tus cuentas.</p>
+                        <div class="guide-meta">
+                            <span class="guide-time"><i class="far fa-clock"></i> 15 min</span>
+                            <a th:href="@{/guides/4}" class="guide-btn">Leer <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-card">
+                    <div class="guide-image"><i class="fas fa-fingerprint"></i></div>
+                    <div class="guide-content">
+                        <h3>Autenticación en Dos Pasos</h3>
+                        <p>Activa la verificación en dos pasos en todas tus cuentas importantes para una capa extra de seguridad.</p>
+                        <div class="guide-meta">
+                            <span class="guide-time"><i class="far fa-clock"></i> 10 min</span>
+                            <a th:href="@{/guides/5}" class="guide-btn">Leer <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="guide-card">
+                    <div class="guide-image"><i class="fas fa-browser"></i></div>
+                    <div class="guide-content">
+                        <h3>Navegación Segura</h3>
+                        <p>Configura tu navegador para máxima privacidad y aprende a identificar sitios web seguros (HTTPS).</p>
+                        <div class="guide-meta">
+                            <span class="guide-time"><i class="far fa-clock"></i> 12 min</span>
+                            <a th:href="@{/guides/6}" class="guide-btn">Leer <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tips Section -->
+<section class="tips-section">
+    <div class="container">
+        <h2 class="section-title" style="text-align:center;font-size:2.5rem;margin-bottom:60px;">Consejos Rápidos de Seguridad</h2>
+        <div class="tips-grid">
+            <div class="tip-card">
+                <div class="tip-number">1</div>
+                <div class="tip-content"><h4>Nunca compartas contraseñas</h4><p>Ninguna empresa legítima te pedirá tu contraseña por correo o mensaje.</p></div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-number">2</div>
+                <div class="tip-content"><h4>Verifica el dominio del email</h4><p>Los correos oficiales usan dominios de empresa, no Gmail o Hotmail.</p></div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-number">3</div>
+                <div class="tip-content"><h4>Desconfía de ofertas demasiado buenas</h4><p>Si suena demasiado bueno para ser verdad, probablemente sea una estafa.</p></div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-number">4</div>
+                <div class="tip-content"><h4>Usa redes seguras</h4><p>Evita enviar información sensible desde redes WiFi públicas sin VPN.</p></div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-number">5</div>
+                <div class="tip-content"><h4>Mantén tu software actualizado</h4><p>Las actualizaciones incluyen parches de seguridad importantes.</p></div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-number">6</div>
+                <div class="tip-content"><h4>Reporta actividades sospechosas</h4><p>Si ves algo raro, repórtalo inmediatamente a las autoridades.</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-grid">
+        <div>
+            <div class="footer-logo"><i class="fas fa-shield-alt"></i> UCentral<span class="highlight">Segura</span></div>
+            <p>Protegiendo los datos personales de los estudiantes de la Universidad Central de Bogotá D.C.</p>
+        </div>
+        <div>
+            <h4>Enlaces Rápidos</h4>
+            <ul>
+                <li><a th:href="@{/}">Inicio</a></li>
+                <li><a th:href="@{/guides}">Guías</a></li>
+                <li><a th:href="@{/test}">Test de Riesgo</a></li>
+                <li><a th:href="@{/report}">Reportar</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Contacto</h4>
+            <ul>
+                <li><i class="fas fa-map-marker-alt"></i> Universidad Central, Bogotá D.C.</li>
+                <li><i class="fas fa-envelope"></i> seguridad@ucentral.edu.co</li>
+                <li><i class="fas fa-phone"></i> +57 1 123 4567</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 Universidad Central de Bogotá D.C. | Proyecto de Seguridad Digital</p>
+    </div>
+</footer>
+</body>
+</html>

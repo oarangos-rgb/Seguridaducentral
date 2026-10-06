@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UCentral Segura | Protección de Datos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #E30613;
+            --primary-dark: #b0000a;
+            --secondary-color: #0056b3;
+            --text-dark: #1a1a2e;
+            --text-light: #6c757d;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --gradient-primary: linear-gradient(135deg, #E30613 0%, #ff4757 100%);
+            --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--text-dark); }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* Navbar */
+        .navbar {
+            background: var(--white);
+            padding: 1rem 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); }
+        .logo .highlight { color: var(--primary-color); }
+        .nav-menu { display: flex; gap: 30px; align-items: center; }
+        .nav-menu a { font-weight: 600; color: var(--text-dark); transition: 0.3s; }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--primary-color); }
+        .nav-menu .btn { padding: 8px 20px; color: white !important; }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 120px 5% 80px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        .hero-content { flex: 1; max-width: 600px; }
+        .hero h1 { font-size: 3.5rem; line-height: 1.2; margin-bottom: 20px; }
+        .hero h1 .highlight { color: var(--primary-color); }
+        .hero-subtitle { font-size: 1.2rem; color: var(--text-light); margin-bottom: 40px; }
+        .hero-buttons { display: flex; gap: 20px; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 15px 30px; border-radius: 50px;
+            font-weight: 600; transition: 0.3s; border: none; cursor: pointer;
+        }
+        .btn-primary {
+            background: var(--gradient-primary); color: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .btn-secondary {
+            background: var(--white); color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        /* Stats Section */
+        .stats-section { padding: 100px 5%; background: var(--white); }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 60px; }
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px; max-width: 1200px; margin: 0 auto;
+        }
+        .stat-card {
+            background: var(--light-bg); padding: 40px 30px;
+            border-radius: 20px; text-align: center; transition: 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-lg); }
+        .stat-icon { font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; }
+        .stat-number { font-size: 3.5rem; font-weight: 700; margin-bottom: 10px; }
+        .stat-label { color: var(--text-light); }
+
+        /* Features Section */
+        .features-section { padding: 100px 5%; background: var(--light-bg); }
+        .features-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px; max-width: 1200px; margin: 0 auto;
+        }
+        .feature-card {
+            background: var(--white); padding: 40px 30px;
+            border-radius: 20px; text-align: center; transition: 0.3s;
+        }
+        .feature-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-lg); }
+        .feature-icon {
+            width: 80px; height: 80px; background: var(--gradient-primary);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 25px;
+        }
+        .feature-icon i { font-size: 2rem; color: var(--white); }
+        .feature-card h3 { margin-bottom: 15px; }
+        .feature-card p { color: var(--text-light); margin-bottom: 20px; }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark); color: var(--white);
+            padding: 60px 5% 30px;
+        }
+        .footer-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px; max-width: 1200px; margin: 0 auto 40px;
+        }
+        .footer-logo { font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; }
+        .footer p { color: rgba(255,255,255,0.7); margin-bottom: 20px; }
+        .footer h4 { margin-bottom: 20px; }
+        .footer ul li { margin-bottom: 10px; }
+        .footer ul li a { color: rgba(255,255,255,0.7); }
+        .footer-bottom {
+            text-align: center; padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; text-align: center; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero-buttons { flex-direction: column; }
+            .nav-menu { display: none; }
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+            UCentral<span class="highlight">Segura</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a th:href="@{/}" class="active">Inicio</a></li>
+            <li><a th:href="@{/guides}">Guías</a></li>
+            <li><a th:href="@{/test}">Test de Riesgo</a></li>
+            <li><a th:href="@{/report}">Reportar</a></li>
+            <li><a th:href="@{/reportes/seguimiento}">Consultar Reporte</a></li>
+            <li><a th:href="@{/about}">Nosotros</a></li>
+
+            <!-- Botón de Ingresar/Registrarse (si no está logueado) -->
+            <li th:unless="${session.usuarioLogueado}">
+                <a th:href="@{/auth/login}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Ingresar
+                </a>
+            </li>
+
+            <!-- Botón de Mi Cuenta (si está logueado) -->
+            <li th:if="${session.usuarioLogueado}">
+                <a th:href="@{/dashboard}" class="btn btn-primary">
+                    <i class="fas fa-user"></i> Mi Cuenta
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Tu empleo ideal no debe <span class="highlight">costar tu identidad</span></h1>
+        <p class="hero-subtitle">Plataforma educativa para estudiantes de la Universidad Central sobre seguridad de datos en búsquedas laborales</p>
+        <div class="hero-buttons">
+            <a th:href="@{/guides}" class="btn btn-primary">
+                <i class="fas fa-graduation-cap"></i> Aprende a Protegerte
+            </a>
+            <a th:href="@{/auth/login}" class="btn btn-secondary">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <h2 class="section-title">La Realidad en Números</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-number">2022+</div>
+            <div class="stat-label">Casos de robo de identidad (SIC)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-number">60%</div>
+            <div class="stat-label">de estudiantes vulnerables</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-file-contract"></i></div>
+            <div class="stat-number">85%</div>
+            <div class="stat-label">de fraudes prevenibles</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-university"></i></div>
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Comprometidos con UCentral</div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <h2 class="section-title">¿Qué Ofrecemos?</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-book-open"></i></div>
+            <h3>Guías Educativas</h3>
+            <p>Contenido especializado sobre protección de datos personales en plataformas de empleo</p>
+            <a th:href="@{/guides}" style="color: var(--primary-color); font-weight: 600;">Leer más →</a>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-clipboard-list"></i></div>
+            <h3>Test de Riesgo</h3>
+            <p>Evalúa tu nivel de exposición y recibe recomendaciones personalizadas</p>
+            <a th:href="@{/test}" style="color: var(--primary-color); font-weight: 600;">Realizar test →</a>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-bullhorn"></i></div>
+            <h3>Reporte de Fraudes</h3>
+            <p>Canal seguro para denunciar ofertas sospechosas y proteger a la comunidad</p>
+            <a th:href="@{/report}" style="color: var(--primary-color); font-weight: 600;">Reportar →</a>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-comments"></i></div>
+            <h3>Comunidad Segura</h3>
+            <p>Foro de estudiantes para compartir experiencias y alertas de seguridad</p>
+            <a th:href="@{/about}" style="color: var(--primary-color); font-weight: 600;">Unirse →</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-grid">
+        <div>
+            <div class="footer-logo">
+                <i class="fas fa-shield-alt"></i> UCentral<span class="highlight">Segura</span>
+            </div>
+            <p>Protegiendo los datos personales de los estudiantes de la Universidad Central de Bogotá D.C.</p>
+        </div>
+        <div>
+            <h4>Enlaces Rápidos</h4>
+            <ul>
+                <li><a th:href="@{/}">Inicio</a></li>
+                <li><a th:href="@{/guides}">Guías</a></li>
+                <li><a th:href="@{/test}">Test de Riesgo</a></li>
+                <li><a th:href="@{/report}">Reportar</a></li>
+                <li><a th:href="@{/reportes/seguimiento}">Consultar Reporte</a></li>
+                <li><a th:href="@{/auth/login}">Iniciar Sesión</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Contacto</h4>
+            <ul>
+                <li><i class="fas fa-map-marker-alt"></i> Universidad Central, Bogotá D.C.</li>
+                <li><i class="fas fa-envelope"></i> seguridad@ucentral.edu.co</li>
+                <li><i class="fas fa-phone"></i> +57 1 123 4567</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 Universidad Central de Bogotá D.C. | Proyecto de Seguridad Digital</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const statNumbers = document.querySelectorAll('.stat-number');
+        const animateValue = (obj, start, end, duration, suffix = '') => {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start) + suffix;
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const text = entry.target.innerText;
+                    const num = parseInt(text);
+                    if (!isNaN(num)) {
+                        animateValue(entry.target, 0, num, 2000,
+                            text.includes('%') ? '%' : (num === 2022 ? '+' : ''));
+                        observer.unobserve(entry.target);
+                    }
+                }
+            });
+        });
+        statNumbers.forEach(num => observer.observe(num));
+    });
+</script>
+</body>
+</html>

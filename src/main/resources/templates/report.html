@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reportar incidente - UCentral Segura</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .header {
+            background: #003b73;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .header a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            color: #003b73;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .ia-box {
+            background: #eef7ff;
+            border-left: 5px solid #007bff;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .ia-box strong {
+            color: #0056a3;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.08);
+        }
+
+        .file-area {
+            border: 2px dashed #aaa;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .file-area:hover {
+            border-color: #007bff;
+            background: #f7fbff;
+        }
+
+        .file-area p {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        #fileName {
+            margin-top: 12px;
+            font-weight: bold;
+            color: #007bff;
+            word-break: break-word;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #003b73;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #002b54;
+        }
+
+        .btn:disabled {
+            background: #7d8b99;
+            cursor: not-allowed;
+        }
+
+        .required {
+            color: red;
+        }
+
+        .optional {
+            color: #777;
+            font-weight: normal;
+            font-size: 13px;
+        }
+
+        .info {
+            font-size: 13px;
+            color: #777;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .success {
+            background: #e7f7ed;
+            border: 1px solid #8ad3a3;
+            color: #216b38;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            background: #fdecec;
+            border: 1px solid #e0a0a0;
+            color: #9c2222;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* ==========================================================
+           MODAL DE ANÁLISIS
+           ========================================================== */
+
+        .analisis-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(0, 26, 51, 0.82);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .analisis-overlay.visible {
+            display: flex;
+        }
+
+        .analisis-modal {
+            background: #fff;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 520px;
+            padding: 30px 28px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+        }
+
+        .analisis-modal h3 {
+            color: #003b73;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .analisis-modal .lead {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .barra-marco {
+            height: 14px;
+            background: #e6eaee;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .barra-relleno {
+            height: 100%;
+            width: 0%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, #003b73, #0f7bd1);
+            transition: width 0.35s ease;
+        }
+
+        .barra-valor {
+            text-align: right;
+            font-size: 13px;
+            color: #003b73;
+            font-weight: bold;
+            margin-top: 6px;
+        }
+
+        .etapas {
+            list-style: none;
+            margin-top: 18px;
+        }
+
+        .etapas li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 7px 0;
+            font-size: 14px;
+            color: #8a8f96;
+        }
+
+        .etapas li .icono {
+            width: 18px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .etapas li.en-curso {
+            color: #003b73;
+            font-weight: bold;
+        }
+
+        .etapas li.lista {
+            color: #1f8b4c;
+        }
+
+        .giro {
+            display: inline-block;
+            animation: giroAnim 1s linear infinite;
+        }
+
+        @keyframes giroAnim {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .analisis-final {
+            margin-top: 22px;
+        }
+
+        .analisis-final .ok-titulo {
+            color: #1f8b4c;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .caja-numero {
+            margin-top: 14px;
+            padding: 16px;
+            border-radius: 10px;
+            background: #f1f6fb;
+            border: 1px dashed #9fc2e0;
+            text-align: center;
+        }
+
+        .caja-numero .rotulo {
+            font-size: 12px;
+            color: #666;
+            letter-spacing: 1px;
+        }
+
+        .caja-numero .numero {
+            font-size: 26px;
+            font-weight: bold;
+            color: #003b73;
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+
+        .analisis-error {
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 10px;
+            background: #fdecea;
+            border-left: 4px solid #c0392b;
+            color: #7d241a;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .analisis-error .codigo {
+            display: block;
+            margin-top: 8px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: #a5564c;
+        }
+
+        .acciones-modal {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .acciones-modal .btn {
+            flex: 1;
+            min-width: 150px;
+            margin: 0;
+        }
+
+        .btn-secundario {
+            background: #e6eaee;
+            color: #003b73;
+        }
+
+        .btn-secundario:hover {
+            background: #d5dbe0;
+        }
+
+        @media (max-width: 600px) {
+
+            .header {
+                padding: 18px;
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .container {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <h1>🛡️ UCentral Segura</h1>
+
+    <nav>
+        <a th:href="@{/}">Inicio</a>
+        <a th:href="@{/reportes/seguimiento}">Consultar informe</a>
+    </nav>
+
+</header>
+
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>Reportar un incidente</h2>
+
+        <p class="subtitle">
+            Completa la información del incidente. Puedes proporcionar una URL,
+            una descripción detallada y, si lo deseas, adjuntar evidencia.
+        </p>
+
+
+        <!-- Mensaje de éxito -->
+        <div th:if="${mensaje}" class="success">
+            <span th:text="${mensaje}"></span>
+        </div>
+
+
+        <!-- Mensaje de error -->
+        <div th:if="${error}" class="error">
+            <span th:text="${error}"></span>
+        </div>
+
+
+        <!-- Información IA -->
+        <div class="ia-box">
+
+            <strong>
+                🤖 Análisis automático con Inteligencia Artificial
+            </strong>
+
+            <p style="margin-top: 8px;">
+
+                El sistema analizará automáticamente la información
+                proporcionada para identificar posibles señales de fraude
+                y determinar un nivel de riesgo:
+
+                <strong>BAJO, MEDIO o ALTO</strong>.
+
+            </p>
+
+            <p style="margin-top: 8px; font-size: 13px; color: #555;">
+
+                El análisis puede utilizar la descripción del incidente,
+                la URL proporcionada y, si existe, el archivo de evidencia
+                adjunto.
+
+                <strong>
+                    La evidencia documental es opcional.
+                </strong>
+
+            </p>
+
+        </div>
+
+
+        <form th:action="@{/reportes/crear}"
+              method="POST"
+              enctype="multipart/form-data"
+              id="reporteForm">
+
+
+            <!-- =====================================================
+                 TIPO DE INCIDENTE
+                 ===================================================== -->
+
+            <div class="form-group">
+
+                <label for="tipoIncidente">
+
+                    Tipo de incidente
+                    <span class="required">*</span>
+
+                </label>
+
+
+                <select id="tipoIncidente"
+                        name="tipoIncidente"
+                        required>
+
+                    <option value="">
+                        Selecciona una opción
+                    </option>
+
+                    <option value="Oferta laboral sospechosa"
+                            th:selected="${reporte != null and reporte.tipoIncidente == 'Oferta laboral sospechosa'}">
+                        Oferta laboral sospechosa
+                    </option>
+
+                    <option value="Solicitud de datos personales"
+                            th:selected="${reporte != null and reporte.tipoIncidente == 'Solicitud de datos personales'}">
+                        Solicitud de datos personales
+                    </option>
+
+                    <option value="Suplantación de identidad"
+                            th:selected="${reporte != null and reporte.tipoIncidente == 'Suplantación de identidad'}">
+                        Suplantación de identidad
+                    </option>
+
+                    <option value="Estafa"
+                            th:selected="${reporte != null and reporte.tipoIncidente == 'Estafa'}">
+                        Estafa
+                    </option>
+
+                    <option value="Phishing"
+                            th:selected="${reporte != null and reporte.tipoIncidente == 'Phishing'}">
+                        Phishing
+                    </option>
+
+                    <option value="Enlace sospechoso"
+                            th:selected="${reporte != null and reporte.tipoIncidente == 'Enlace sospechoso'}">
+                        Enlace sospechoso
+                    </option>
+
+                    <option value="Otro"
+                            th:selected="${reporte != null and reporte.tipoIncidente == 'Otro'}">
+                        Otro
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =====================================================
+                 EMPRESA / PERSONA
+                 ===================================================== -->
+
+            <div class="form-group">
+
+                <label for="nombreEmpresaPersona">
+                    Nombre de la empresa o persona
+                </label>
+
+                <input type="text"
+                       id="nombreEmpresaPersona"
+                       name="nombreEmpresaPersona"
+                       th:value="${reporte != null ? reporte.nombreEmpresaPersona : ''}"
+                       placeholder="Ej. Empresa XYZ">
+
+            </div>
+
+
+            <!-- =====================================================
+                 CORREO / TELÉFONO
+                 ===================================================== -->
+
+            <div class="form-group">
+
+                <label for="correoTelefono">
+                    Correo electrónico o teléfono relacionado
+                </label>
+
+                <input type="text"
+                       id="correoTelefono"
+                       name="correoTelefono"
+                       th:value="${reporte != null ? reporte.correoTelefono : ''}"
+                       placeholder="Ej. ejemplo@correo.com / 3001234567">
+
+            </div>
+
+
+            <!-- =====================================================
+                 URL
+                 ===================================================== -->
+
+            <div class="form-group">
+
+                <label for="urlEnlace">
+                    URL o enlace relacionado
+                    <span class="required">*</span>
+                </label>
+
+                <input type="url"
+                       id="urlEnlace"
+                       name="urlEnlace"
+                       th:value="${reporte != null ? reporte.urlEnlace : ''}"
+                       placeholder="https://ejemplo.com"
+                       required
+                       maxlength="2048">
+
+                <p class="info">
+                    La URL es obligatoria. Se analizarán el dominio, IP,
+                    HTTPS, redirecciones y demás información técnica disponible.
+                </p>
+
+            </div>
+
+
+            <!-- =====================================================
+                 DESCRIPCIÓN
+                 ===================================================== -->
+
+            <div class="form-group">
+
+                <label for="descripcion">
+
+                    Descripción del incidente
+                    <span class="required">*</span>
+
+                </label>
+
+                <textarea id="descripcion"
+                          name="descripcion"
+                          required
+                          placeholder="Describe qué ocurrió, qué información te solicitaron, cómo te contactaron, etc."
+                          th:text="${reporte != null ? reporte.descripcion : ''}">
+                </textarea>
+
+            </div>
+
+
+            <!-- =====================================================
+                 FECHA
+                 ===================================================== -->
+
+            <div class="form-group">
+
+                <label for="fechaIncidente">
+                    Fecha del incidente
+                </label>
+
+                <input type="date"
+                       id="fechaIncidente"
+                       name="fechaIncidente"
+                       th:value="${(reporte != null and reporte.fechaIncidente != null)
+                                  ? #temporals.format(reporte.fechaIncidente, 'yyyy-MM-dd') : ''}">
+
+            </div>
+
+
+            <!-- =====================================================
+                 CORREO SEGUIMIENTO
+                 ===================================================== -->
+
+            <div class="form-group">
+
+                <label for="correoSeguimiento">
+                    Correo para recibir seguimiento
+                </label>
+
+                <input type="email"
+                       id="correoSeguimiento"
+                       name="correoSeguimiento"
+                       th:value="${reporte != null ? reporte.correoSeguimiento : ''}"
+                       placeholder="tu-correo@ejemplo.com">
+
+            </div>
+
+
+            <!-- =====================================================
+                 EVIDENCIA OPCIONAL
+                 ===================================================== -->
+
+            <div class="form-group">
+
+                <label for="fileInput">
+
+                    Evidencia del incidente
+
+                    <span class="optional">
+                        (opcional)
+                    </span>
+
+                </label>
+
+
+                <div class="file-area"
+                     onclick="document.getElementById('fileInput').click();">
+
+                    <div style="font-size: 35px;">
+                        📎
+                    </div>
+
+                    <p>
+                        Haz clic para seleccionar un documento o imagen
+                    </p>
+
+                    <p class="info">
+                        Puedes enviar el reporte sin adjuntar ningún archivo.
+                    </p>
+
+                    <p class="info">
+                        Formatos permitidos:
+                        PDF, DOC, DOCX, TXT, PNG, JPG, JPEG,
+                        WEBP, GIF, EML, MSG
+                    </p>
+
+                    <p class="info">
+                        Tamaño máximo: 10 MB
+                    </p>
+
+                    <div id="fileName">
+                        No se ha seleccionado ningún archivo
+                    </div>
+
+                </div>
+
+
+                <input type="file"
+                       id="fileInput"
+                       name="archivoEvidencia"
+                       accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,.webp,.gif,.eml,.msg"
+                       style="display:none;">
+
+            </div>
+
+
+            <!-- =====================================================
+                 BOTÓN
+                 ===================================================== -->
+
+            <button type="submit"
+                    class="btn"
+                    id="submitButton">
+
+                🤖 Enviar y analizar
+
+            </button>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     MODAL DE ANÁLISIS
+     ========================================================== -->
+
+<div class="analisis-overlay"
+     id="analisisOverlay"
+     role="dialog"
+     aria-modal="true">
+
+    <div class="analisis-modal">
+
+        <h3>
+            🤖 UCentral Segura
+        </h3>
+
+        <p class="lead" id="analisisLead">
+            Analizando tu reporte...
+        </p>
+
+
+        <!-- PROGRESO -->
+
+        <div id="analisisProgreso">
+
+            <div class="barra-marco">
+
+                <div class="barra-relleno"
+                     id="barraRelleno">
+                </div>
+
+            </div>
+
+
+            <div class="barra-valor"
+                 id="barraValor">
+                0%
+            </div>
+
+
+            <ul class="etapas"
+                id="listaEtapas">
+            </ul>
+
+        </div>
+
+
+        <!-- ======================================================
+             FINALIZADO
+             ====================================================== -->
+
+        <div class="analisis-final"
+             id="analisisFinal"
+             style="display:none;">
+
+            <div class="ok-titulo">
+                ✓ Análisis completado
+            </div>
+
+            <p style="margin-top:6px; color:#555; font-size:14px;">
+
+                Tu reporte fue registrado correctamente.
+
+            </p>
+
+
+            <div class="caja-numero">
+
+                <div class="rotulo">
+                    NÚMERO DE SEGUIMIENTO
+                </div>
+
+                <div class="numero"
+                     id="numeroSeguimiento">
+                    —
+                </div>
+
+            </div>
+
+
+            <div class="acciones-modal">
+
+                <a class="btn"
+                   id="btnVerReporte"
+                   href="#">
+                    Ver reporte
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================================
+             ERROR
+             ====================================================== -->
+
+        <div id="analisisFallo"
+             style="display:none;">
+
+            <div class="analisis-error">
+
+                <strong>
+                    No se pudo completar el análisis
+                </strong>
+
+                <div id="mensajeFallo"
+                     style="margin-top:6px;">
+                </div>
+
+                <span class="codigo"
+                      id="codigoFallo">
+                </span>
+
+            </div>
+
+
+            <div class="acciones-modal">
+
+                <button type="button"
+                        class="btn"
+                        id="btnReintentar">
+
+                    Reintentar
+
+                </button>
+
+
+                <button type="button"
+                        class="btn btn-secundario"
+                        id="btnCerrarModal">
+
+                    Volver al formulario
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const fileInput =
+        document.getElementById("fileInput");
+
+    const fileName =
+        document.getElementById("fileName");
+
+    const form =
+        document.getElementById("reporteForm");
+
+    const submitButton =
+        document.getElementById("submitButton");
+
+    const overlay =
+        document.getElementById("analisisOverlay");
+
+    const barraRelleno =
+        document.getElementById("barraRelleno");
+
+    const barraValor =
+        document.getElementById("barraValor");
+
+    const listaEtapas =
+        document.getElementById("listaEtapas");
+
+    const bloqueProgreso =
+        document.getElementById("analisisProgreso");
+
+    const bloqueFinal =
+        document.getElementById("analisisFinal");
+
+    const bloqueFallo =
+        document.getElementById("analisisFallo");
+
+    const analisisLead =
+        document.getElementById("analisisLead");
+
+    const numeroSeguimiento =
+        document.getElementById("numeroSeguimiento");
+
+    const btnVerReporte =
+        document.getElementById("btnVerReporte");
+
+    const btnReintentar =
+        document.getElementById("btnReintentar");
+
+    const btnCerrarModal =
+        document.getElementById("btnCerrarModal");
+
+
+    const INTERVALO_MS = 700;
+
+    let temporizador = null;
+
+
+    /* ==========================================================
+       ARCHIVO
+
+       El archivo es OPCIONAL.
+       ========================================================== */
+
+    fileInput.addEventListener("change", function () {
+
+        if (this.files.length > 0) {
+
+            const archivo = this.files[0];
+
+            const tamanioMB =
+                archivo.size / 1024 / 1024;
+
+
+            if (tamanioMB > 10) {
+
+                fileName.textContent =
+                    "❌ El archivo supera el límite de 10 MB";
+
+                this.value = "";
+
+                return;
+            }
+
+
+            fileName.textContent =
+                "📄 " +
+                archivo.name +
+                " (" +
+                tamanioMB.toFixed(2) +
+                " MB)";
+
+        } else {
+
+            fileName.textContent =
+                "No se ha seleccionado ningún archivo";
+
+        }
+
+    });
+
+
+    /* ==========================================================
+       ENVÍO DEL FORMULARIO
+       ========================================================== */
+
+    form.addEventListener("submit", function (evento) {
+
+        evento.preventDefault();
+
+        const url =
+            document.getElementById("urlEnlace").value.trim();
+
+
+        if (!url) {
+
+            document.getElementById("urlEnlace").focus();
+
+            alert(
+                "La URL o enlace relacionado es obligatorio."
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const parsed =
+                new URL(url);
+
+
+            if (
+                parsed.protocol !== "http:" &&
+                parsed.protocol !== "https:"
+            ) {
+
+                throw new Error("protocolo");
+
+            }
+
+        } catch (error) {
+
+            document.getElementById("urlEnlace").focus();
+
+            alert(
+                "Ingresa una URL válida que comience con http:// o https://."
+            );
+
+            return;
+        }
+
+
+        enviar();
+
+    });
+
+
+    btnReintentar.addEventListener(
+        "click",
+        enviar
+    );
+
+
+    btnCerrarModal.addEventListener(
+        "click",
+        function () {
+
+            overlay.classList.remove("visible");
+
+            habilitarBoton();
+
+        }
+    );
+
+
+    /* ==========================================================
+       ENVIAR
+       ========================================================== */
+
+    function enviar() {
+
+        prepararModal();
+
+
+        const datos =
+            new FormData(form);
+
+
+        fetch("/reportes/analisis", {
+
+            method: "POST",
+
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            },
+
+            body: datos
+
+        })
+
+        .then(function (respuesta) {
+
+            return respuesta.json()
+                .then(function (cuerpo) {
+
+                    return {
+                        ok: respuesta.ok,
+                        cuerpo: cuerpo
+                    };
+
+                });
+
+        })
+
+        .then(function (resultado) {
+
+            if (
+                !resultado.ok ||
+                !resultado.cuerpo.jobId
+            ) {
+
+                mostrarFallo(
+                    resultado.cuerpo
+                );
+
+                return;
+            }
+
+
+            pintar(
+                resultado.cuerpo
+            );
+
+
+            seguir(
+                resultado.cuerpo.jobId
+            );
+
+        })
+
+        .catch(function () {
+
+            mostrarFallo({
+
+                codigoError:
+                    "ERROR_CONEXION",
+
+                mensajeError:
+                    "No hay conexión con el servidor. " +
+                    "Revisa tu red e intenta de nuevo. " +
+                    "Los datos del formulario siguen aquí."
+
+            });
+
+        });
+
+    }
+
+
+    /* ==========================================================
+       POLLING
+
+       El frontend NO calcula el porcentaje.
+
+       El porcentaje mostrado es exactamente el que
+       devuelve TrabajoAnalisis desde el backend.
+       ========================================================== */
+
+    function seguir(jobId) {
+
+        detener();
+
+
+        temporizador =
+            setInterval(function () {
+
+                fetch(
+                    "/reportes/analisis/" + jobId,
+                    {
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        }
+                    }
+                )
+
+                .then(function (r) {
+
+                    return r.json();
+
+                })
+
+                .then(function (estado) {
+
+                    pintar(estado);
+
+
+                    if (
+                        estado.estado ===
+                        "COMPLETADO"
+                    ) {
+
+                        detener();
+
+                        mostrarExito(
+                            estado
+                        );
+
+                    }
+
+
+                    if (
+                        estado.estado ===
+                        "ERROR"
+                    ) {
+
+                        detener();
+
+                        mostrarFallo(
+                            estado
+                        );
+
+                    }
+
+                })
+
+                .catch(function () {
+
+                    /*
+                     * Un fallo puntual de red no cancela
+                     * el análisis.
+                     *
+                     * El siguiente ciclo vuelve a consultar
+                     * el servidor.
+                     */
+
+                });
+
+            }, INTERVALO_MS);
+
+    }
+
+
+    /* ==========================================================
+       PINTAR PROGRESO
+       ========================================================== */
+
+    function pintar(estado) {
+
+        const porcentaje =
+            Number.isFinite(Number(estado.porcentaje))
+                ? Number(estado.porcentaje)
+                : 0;
+
+
+        barraRelleno.style.width =
+            porcentaje + "%";
+
+
+        barraValor.textContent =
+            porcentaje + "%";
+
+
+        if (!estado.etapas) {
+
+            return;
+
+        }
+
+
+        listaEtapas.innerHTML = "";
+
+
+        estado.etapas.forEach(
+            function (etapa) {
+
+                const item =
+                    document.createElement("li");
+
+
+                const icono =
+                    document.createElement("span");
+
+
+                icono.className =
+                    "icono";
+
+
+                if (
+                    etapa.estado ===
+                    "LISTA"
+                ) {
+
+                    item.className =
+                        "lista";
+
+                    icono.textContent =
+                        "✓";
+
+                }
+
+                else if (
+                    etapa.estado ===
+                    "EN_CURSO"
+                ) {
+
+                    item.className =
+                        "en-curso";
+
+                    icono.className =
+                        "icono giro";
+
+                    icono.textContent =
+                        "⟳";
+
+                }
+
+                else {
+
+                    icono.textContent =
+                        "○";
+
+                }
+
+
+                const texto =
+                    document.createElement("span");
+
+
+                texto.textContent =
+                    etapa.titulo;
+
+
+                item.appendChild(icono);
+
+                item.appendChild(texto);
+
+                listaEtapas.appendChild(item);
+
+            }
+        );
+
+    }
+
+
+    /* ==========================================================
+       PREPARAR MODAL
+       ========================================================== */
+
+    function prepararModal() {
+
+        detener();
+
+
+        overlay.classList.add(
+            "visible"
+        );
+
+
+        bloqueProgreso.style.display =
+            "";
+
+
+        bloqueFinal.style.display =
+            "none";
+
+
+        bloqueFallo.style.display =
+            "none";
+
+
+        analisisLead.textContent =
+            "Analizando tu reporte...";
+
+
+        barraRelleno.style.width =
+            "0%";
+
+
+        barraValor.textContent =
+            "0%";
+
+
+        listaEtapas.innerHTML =
+            "";
+
+
+        submitButton.disabled =
+            true;
+
+
+        submitButton.textContent =
+            "🤖 Analizando reporte...";
+
+    }
+
+
+    /* ==========================================================
+       ÉXITO
+       ========================================================== */
+
+    function mostrarExito(estado) {
+
+        bloqueProgreso.style.display =
+            "none";
+
+
+        bloqueFallo.style.display =
+            "none";
+
+
+        bloqueFinal.style.display =
+            "";
+
+
+        analisisLead.textContent =
+            "Listo.";
+
+
+        numeroSeguimiento.textContent =
+            estado.numeroSeguimiento ||
+            "—";
+
+
+        btnVerReporte.setAttribute(
+            "href",
+            estado.urlInforme ||
+            "/reportes/seguimiento"
+        );
+
+
+        habilitarBoton();
+
+    }
+
+
+    /* ==========================================================
+       ERROR
+       ========================================================== */
+
+    function mostrarFallo(estado) {
+
+        detener();
+
+
+        bloqueProgreso.style.display =
+            "none";
+
+
+        bloqueFinal.style.display =
+            "none";
+
+
+        bloqueFallo.style.display =
+            "";
+
+
+        analisisLead.textContent =
+            "El análisis se detuvo.";
+
+
+        document.getElementById(
+            "mensajeFallo"
+        ).textContent =
+
+            (
+                estado &&
+                estado.mensajeError
+            )
+            ?
+            estado.mensajeError
+            :
+            "El servidor no devolvió un motivo. " +
+            "Intenta de nuevo.";
+
+
+        document.getElementById(
+            "codigoFallo"
+        ).textContent =
+
+            (
+                estado &&
+                estado.codigoError
+            )
+            ?
+            "Código: " +
+            estado.codigoError
+            :
+            "";
+
+
+        habilitarBoton();
+
+    }
+
+
+    /* ==========================================================
+       HABILITAR BOTÓN
+       ========================================================== */
+
+    function habilitarBoton() {
+
+        submitButton.disabled =
+            false;
+
+
+        submitButton.textContent =
+            "🤖 Enviar y analizar";
+
+    }
+
+
+    /* ==========================================================
+       DETENER POLLING
+       ========================================================== */
+
+    function detener() {
+
+        if (temporizador) {
+
+            clearInterval(
+                temporizador
+            );
+
+            temporizador =
+                null;
+
+        }
+
+    }
+
+</script>
+
+</body>
+
+</html>
+```

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nosotros | UCentral Segura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+        --primary-color: #E30613; --primary-dark: #b0000a;
+        --secondary-color: #0056b3; --text-dark: #1a1a2e;
+        --text-light: #6c757d; --white: #ffffff;
+        --light-bg: #f8f9fa;
+        --gradient-primary: linear-gradient(135deg, #E30613 0%, #ff4757 100%);
+        --shadow-md: 0 5px 20px rgba(0,0,0,0.15);
+        --shadow-lg: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--text-dark); background: var(--light-bg); }
+    h1, h2, h3 { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+
+    .sidebar { position: fixed; left: 0; top: 0; width: 280px; height: 100vh; background: var(--white); box-shadow: var(--shadow-md); z-index: 1000; overflow-y: auto; }
+    .sidebar-header { padding: 30px 20px; border-bottom: 1px solid #e0e0e0; }
+    .sidebar-logo { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 10px; }
+    .sidebar-logo .highlight { color: var(--primary-color); }
+    .user-profile { padding: 30px 20px; text-align: center; border-bottom: 1px solid #e0e0e0; }
+    .user-avatar { width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; }
+    .user-avatar i { font-size: 2.5rem; color: var(--white); }
+    .user-name { font-weight: 700; color: var(--text-dark); margin-bottom: 5px; }
+    .user-email { color: var(--text-light); font-size: 0.9rem; }
+    .user-badge { display: inline-block; background: var(--light-bg); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; color: var(--primary-color); font-weight: 600; margin-top: 10px; }
+    .sidebar-menu { padding: 20px 0; }
+    .sidebar-menu a { display: flex; align-items: center; gap: 15px; padding: 15px 25px; color: var(--text-light); transition: 0.3s; border-left: 4px solid transparent; }
+    .sidebar-menu a:hover, .sidebar-menu a.active { background: var(--light-bg); color: var(--primary-color); border-left-color: var(--primary-color); }
+    .sidebar-menu a i { width: 20px; text-align: center; }
+    .sidebar-logout { position: absolute; bottom: 0; width: 100%; padding: 20px; border-top: 1px solid #e0e0e0; }
+    .sidebar-logout a { display: flex; align-items: center; gap: 15px; padding: 15px; color: var(--primary-color); font-weight: 600; transition: 0.3s; }
+    .sidebar-logout a:hover { background: var(--light-bg); border-radius: 10px; }
+
+    .main-content { margin-left: 280px; padding: 30px; }
+    .page-header { margin-bottom: 40px; }
+    .page-header h1 { font-size: 2rem; color: var(--text-dark); }
+    .page-header p { color: var(--text-light); margin-top: 8px; }
+
+    .card { background: var(--white); border-radius: 15px; box-shadow: var(--shadow-md); overflow: hidden; margin-bottom: 25px; }
+    .card-header { padding: 25px; border-bottom: 1px solid #e0e0e0; }
+    .card-header h3 { font-size: 1.2rem; color: var(--text-dark); }
+    .card-body { padding: 30px; }
+
+    .hero-section {
+        background: var(--gradient-primary); border-radius: 15px;
+        padding: 50px 40px; text-align: center; color: var(--white); margin-bottom: 25px;
+    }
+    .hero-section h2 { font-size: 2rem; margin-bottom: 15px; }
+    .hero-section p { font-size: 1.1rem; opacity: 0.9; max-width: 700px; margin: 0 auto; }
+
+    .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
+    .team-card {
+        background: var(--white); border-radius: 15px; box-shadow: var(--shadow-md);
+        padding: 30px 20px; text-align: center; transition: 0.3s;
+    }
+    .team-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+    .team-avatar {
+        width: 80px; height: 80px; background: var(--gradient-primary);
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 15px;
+    }
+    .team-avatar i { font-size: 2rem; color: var(--white); }
+    .team-name { font-weight: 700; font-size: 1rem; color: var(--text-dark); margin-bottom: 5px; }
+    .team-role { color: var(--primary-color); font-size: 0.85rem; font-weight: 600; }
+
+    .mission-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .mission-item { display: flex; gap: 20px; align-items: flex-start; }
+    .mission-icon { width: 50px; height: 50px; background: rgba(227,6,19,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mission-icon i { color: var(--primary-color); font-size: 1.3rem; }
+    .mission-text h4 { font-weight: 700; color: var(--text-dark); margin-bottom: 5px; }
+    .mission-text p { color: var(--text-light); font-size: 0.9rem; }
+
+    .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; text-align: center; }
+    .stat-item { padding: 20px; }
+    .stat-number { font-size: 2.5rem; font-weight: 700; color: var(--primary-color); }
+    .stat-label { color: var(--text-light); font-size: 0.9rem; margin-top: 5px; }
+
+    @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; } }
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <i class="fas fa-shield-alt"></i>
+      UCentral<span class="highlight">Segura</span>
+    </div>
+  </div>
+  <div class="user-profile">
+    <div class="user-avatar"><i class="fas fa-user-graduate"></i></div>
+    <div class="user-name" th:text="${session.usuario?.nombres + ' ' + session.usuario?.apellidos}">Usuario</div>
+    <div class="user-email" th:text="${session.usuario?.email}">email@ucentral.edu.co</div>
+    <div class="user-badge">🎓 Estudiante Activo</div>
+  </div>
+  <nav class="sidebar-menu">
+    <a th:href="@{/dashboard}"><i class="fas fa-home"></i> Dashboard</a>
+    <a th:href="@{/guides}"><i class="fas fa-book-open"></i> Guías</a>
+    <a th:href="@{/test}"><i class="fas fa-clipboard-check"></i> Test de Riesgo</a>
+    <a th:href="@{/report}"><i class="fas fa-exclamation-triangle"></i> Reportar</a>
+    <a th:href="@{/reportes/seguimiento}"><i class="fas fa-search"></i> Consultar Reporte</a>
+    <a href="#"><i class="fas fa-certificate"></i> Certificados</a>
+    <a th:href="@{/about}" class="active"><i class="fas fa-users"></i> Nosotros</a>
+  </nav>
+  <div class="sidebar-logout">
+    <a th:href="@{/auth/logout}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+  </div>
+</aside>
+
+<main class="main-content">
+  <div class="page-header">
+    <h1><i class="fas fa-users" style="color: var(--primary-color);"></i> Sobre Nosotros</h1>
+    <p>Conoce el equipo detrás de UCentral Segura y nuestra misión.</p>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero-section">
+    <h2>🛡️ UCentral Segura</h2>
+    <p>Plataforma educativa de ciberseguridad para estudiantes de la Universidad Central de Bogotá D.C., enfocada en proteger sus datos personales al buscar empleo en línea.</p>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="card">
+    <div class="card-header"><h3><i class="fas fa-chart-bar"></i> Impacto del Proyecto</h3></div>
+    <div class="card-body">
+      <div class="stat-row">
+        <div class="stat-item">
+          <div class="stat-number">15.000+</div>
+          <div class="stat-label">Denuncias de ciberdelitos en Bogotá (2022)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">28,4%</div>
+          <div class="stat-label">De los casos nacionales ocurren en Bogotá</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">10.000+</div>
+          <div class="stat-label">Casos de robo de identidad en Colombia (2022)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">15%</div>
+          <div class="stat-label">Aumento de robos vs año anterior</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Misión -->
+  <div class="card">
+    <div class="card-header"><h3><i class="fas fa-bullseye"></i> Nuestra Misión</h3></div>
+    <div class="card-body">
+      <div class="mission-grid">
+        <div class="mission-item">
+          <div class="mission-icon"><i class="fas fa-graduation-cap"></i></div>
+          <div class="mission-text">
+            <h4>Educar</h4>
+            <p>Informar a los estudiantes sobre los riesgos de compartir datos personales en plataformas de empleo en línea.</p>
+          </div>
+        </div>
+        <div class="mission-item">
+          <div class="mission-icon"><i class="fas fa-shield-alt"></i></div>
+          <div class="mission-text">
+            <h4>Proteger</h4>
+            <p>Brindar herramientas y guías prácticas para que los estudiantes protejan su información personal.</p>
+          </div>
+        </div>
+        <div class="mission-item">
+          <div class="mission-icon"><i class="fas fa-search"></i></div>
+          <div class="mission-text">
+            <h4>Concientizar</h4>
+            <p>Generar conciencia sobre el cumplimiento de la Ley 1581 de 2012 de Protección de Datos Personales.</p>
+          </div>
+        </div>
+        <div class="mission-item">
+          <div class="mission-icon"><i class="fas fa-users"></i></div>
+          <div class="mission-text">
+            <h4>Comunidad</h4>
+            <p>Crear una red de estudiantes informados que contribuyan a una cultura de seguridad digital en la universidad.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Equipo -->
+  <div class="card">
+    <div class="card-header"><h3><i class="fas fa-user-friends"></i> Equipo de Desarrollo</h3></div>
+    <div class="card-body">
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar"><i class="fas fa-user"></i></div>
+          <div class="team-name">Odín Santiago Arango</div>
+          <div class="team-role">Desarrollador Full Stack</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar"><i class="fas fa-user"></i></div>
+          <div class="team-name">David Esteban Barreto Cubillo</div>
+          <div class="team-role">Desarrollador Backend</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar"><i class="fas fa-user"></i></div>
+          <div class="team-name">Brayan Camilo Garavito Cifuentes</div>
+          <div class="team-role">Desarrollador Frontend</div>
+        </div>
+      </div>
+      <p style="text-align: center; color: var(--text-light); margin-top: 25px; font-size: 0.9rem;">
+        Facultad de Ingeniería y Ciencias Básicas · Universidad Central · Práctica de Ingeniería III<br>
+        Master: Juan Carlos Franco
+      </p>
+    </div>
+  </div>
+</main>
+</body>
+</html>

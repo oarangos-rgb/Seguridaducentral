@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Revisión | UCentral Segura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+        --primary-color: #E30613; --primary-dark: #b0000a;
+        --secondary-color: #0056b3; --text-dark: #1a1a2e;
+        --text-light: #6c757d; --white: #ffffff;
+        --light-bg: #f8f9fa;
+        --gradient-primary: linear-gradient(135deg, #E30613 0%, #ff4757 100%);
+        --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.15);
+        --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--text-dark); background: var(--light-bg); }
+    h1, h2, h3 { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+
+    .topbar {
+        background: var(--white); padding: 1.2rem 5%; box-shadow: var(--shadow-md);
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .topbar .logo { font-size: 1.4rem; font-weight: 700; }
+    .logo .highlight { color: var(--primary-color); }
+    .topbar a.back { color: var(--text-light); font-weight: 600; }
+    .topbar a.back:hover { color: var(--primary-color); }
+
+    .main-content { max-width: 1200px; margin: 0 auto; padding: 40px 5%; }
+    .page-title { margin-bottom: 10px; }
+    .page-subtitle { color: var(--text-light); margin-bottom: 30px; }
+
+    .alert-message { padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
+    .alert-message.success { background: #e6ffe6; color: #090; }
+    .alert-message.error { background: #ffe6e6; color: #c00; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+    .stat-mini { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-md); text-align: center; }
+    .stat-mini .num { font-size: 1.8rem; font-weight: 700; }
+    .stat-mini.bajo .num { color: #2f9e44; }
+    .stat-mini.medio .num { color: #a97400; }
+    .stat-mini.alto .num { color: #d6336c; }
+    .stat-mini .label { color: var(--text-light); font-size: 0.85rem; text-transform: uppercase; }
+
+    .table-card { background: var(--white); border-radius: 15px; box-shadow: var(--shadow-md); overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+    th, td { text-align: left; padding: 14px 16px; border-bottom: 1px solid #e0e0e0; font-size: 0.9rem; vertical-align: middle; }
+    th { color: var(--text-light); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; background: var(--light-bg); }
+    tr:last-child td { border-bottom: none; }
+    .desc-cell { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .riesgo-badge { display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+    .riesgo-badge.bajo { background: rgba(40, 167, 69, 0.15); color: #28a745; }
+    .riesgo-badge.medio { background: rgba(255, 193, 7, 0.15); color: #b8860b; }
+    .riesgo-badge.alto { background: rgba(227, 6, 19, 0.15); color: var(--primary-color); }
+
+    .link-informe { color: var(--primary-color); font-weight: 600; white-space: nowrap; }
+    .puntaje { font-weight: 700; }
+    .acciones-bar { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; flex-wrap:wrap; }
+    .acciones-bar .hint { color:var(--text-light); font-size:.9rem; }
+    .btn-delete { border:0; background:#ffe8e8; color:#c00; padding:8px 11px; border-radius:9px; font-weight:700; cursor:pointer; }
+    .btn-delete:hover { background:#ffd5d5; }
+    .btn-delete-all { border:0; background:var(--primary-color); color:#fff; padding:11px 16px; border-radius:10px; font-weight:700; cursor:pointer; }
+    .btn-delete-all:disabled { opacity:.45; cursor:not-allowed; }
+    .check-reporte { width:18px; height:18px; cursor:pointer; }
+    .acciones-cell { white-space:nowrap; }
+    .empty-state { text-align: center; padding: 50px 0; color: var(--text-light); }
+
+    @media (max-width: 768px) { .stats-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><i class="fas fa-shield-alt"></i> UCentral<span class="highlight">Segura</span> · Panel de Análisis</div>
+  <a class="back" th:href="@{/dashboard}"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+</div>
+
+<main class="main-content">
+  <h1 class="page-title">Análisis automáticos</h1>
+  <p class="page-subtitle">Consolidado de solo lectura. Cada reporte se analiza automáticamente al recibirse y el veredicto queda guardado: no hay cola de revisión manual ni estados que actualizar a mano.</p>
+
+  <div th:if="${success}" class="alert-message success" th:text="${success}"></div>
+  <div th:if="${error}" class="alert-message error" th:text="${error}"></div>
+
+  <div class="stats-row" th:if="${!#lists.isEmpty(reportes)}">
+    <div class="stat-mini alto">
+      <div class="num" th:text="${#lists.size(reportes.?[nivelRiesgo == 'ALTO'])}">0</div>
+      <div class="label">Riesgo Alto</div>
+    </div>
+    <div class="stat-mini medio">
+      <div class="num" th:text="${#lists.size(reportes.?[nivelRiesgo == 'MEDIO'])}">0</div>
+      <div class="label">Riesgo Medio</div>
+    </div>
+    <div class="stat-mini bajo">
+      <div class="num" th:text="${#lists.size(reportes.?[nivelRiesgo == 'BAJO'])}">0</div>
+      <div class="label">Riesgo Bajo</div>
+    </div>
+  </div>
+
+  <form id="formEliminarSeleccionados" method="post" th:action="@{/reportes/admin/eliminar-seleccionados}">
+    <div class="acciones-bar" th:if="${!#lists.isEmpty(reportes)}">
+      <span class="hint"><i class="fas fa-trash-can"></i> Puedes eliminar reportes individualmente o seleccionar varios.</span>
+      <button type="submit" id="btnEliminarSeleccionados" class="btn-delete-all" disabled>
+        <i class="fas fa-trash-can"></i> Eliminar seleccionados
+      </button>
+    </div>
+
+  <div class="table-card">
+    <div th:if="${#lists.isEmpty(reportes)}" class="empty-state">
+      <p>Todavía no se ha recibido ningún reporte de fraude.</p>
+    </div>
+
+    <table th:unless="${#lists.isEmpty(reportes)}">
+      <thead>
+      <tr>
+        <th><input id="seleccionarTodos" class="check-reporte" type="checkbox" title="Seleccionar todos"></th>
+        <th>N° Seguimiento</th>
+        <th>Tipo</th>
+        <th>Reportado</th>
+        <th>Estudiante</th>
+        <th>Descripción</th>
+        <th>Fecha</th>
+        <th>Riesgo</th>
+        <th>Índice</th>
+        <th>Motor</th>
+        <th>Evidencia</th>
+        <th>Informe</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="r : ${reportes}">
+        <td><input class="check-reporte check-item" type="checkbox" name="ids" th:value="${r.id}"></td>
+        <td th:text="${r.numeroSeguimiento}">UC-2026-0000</td>
+        <td th:text="${r.tipoIncidente}">Phishing</td>
+        <td th:text="${r.nombreEmpresaPersona}">Empresa X</td>
+        <td th:text="${r.usuario != null ? r.usuario.nombres : 'Anónimo'}">Anónimo</td>
+        <td class="desc-cell" th:text="${r.descripcion}" th:title="${r.descripcion}">Descripción del incidente...</td>
+        <td th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy')}">01/01/2026</td>
+        <td>
+          <span class="riesgo-badge"
+                th:classappend="${#strings.toLowerCase(r.nivelRiesgo)}"
+                th:text="${r.nivelRiesgo}">BAJO</span>
+        </td>
+        <td class="puntaje" th:text="${r.puntajeSeguro} + '/100'">0/100</td>
+        <td th:text="${r.motorAnalisis != null ? r.motorAnalisis : 'IA'}">IA</td>
+        <td>
+          <span th:if="${r.rutaArchivoEvidencia == null or #strings.isEmpty(r.rutaArchivoEvidencia)}"
+                style="color: var(--text-light);">—</span>
+          <span th:unless="${r.rutaArchivoEvidencia == null or #strings.isEmpty(r.rutaArchivoEvidencia)}">
+            <a th:each="nombreArchivo, iter : ${#strings.arraySplit(r.rutaArchivoEvidencia, ',')}"
+               th:href="@{'/uploads/evidencias/' + ${nombreArchivo}}"
+               target="_blank" style="color: var(--secondary-color); font-weight: 600;">
+              <i class="fas fa-paperclip"></i><span th:text="${'Archivo ' + (iter.index + 1)}">Archivo 1</span>
+            </a><br th:if="${!iter.last}"/>
+          </span>
+        </td>
+        <td>
+          <a class="link-informe"
+             th:href="@{/reportes/seguimiento(numero=${r.numeroSeguimiento})}"
+             target="_blank">Ver informe</a>
+        </td>
+        <td class="acciones-cell">
+          <button type="button" class="btn-delete btn-eliminar-individual"
+                  th:data-id="${r.id}"
+                  th:data-numero="${r.numeroSeguimiento}"
+                  title="Eliminar reporte">
+            <i class="fas fa-trash-can"></i> Eliminar
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  </form>
+</main>
+
+<script>
+(function () {
+  const form = document.getElementById('formEliminarSeleccionados');
+  const todos = document.getElementById('seleccionarTodos');
+  const items = () => Array.from(document.querySelectorAll('.check-item'));
+  const boton = document.getElementById('btnEliminarSeleccionados');
+
+  function actualizar() {
+    const seleccionados = items().filter(c => c.checked);
+    if (boton) boton.disabled = seleccionados.length === 0;
+    if (todos) {
+      todos.checked = items().length > 0 && seleccionados.length === items().length;
+      todos.indeterminate = seleccionados.length > 0 && seleccionados.length < items().length;
+    }
+  }
+
+  if (todos) {
+    todos.addEventListener('change', function () {
+      items().forEach(c => c.checked = todos.checked);
+      actualizar();
+    });
+  }
+
+  items().forEach(c => c.addEventListener('change', actualizar));
+
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      const seleccionados = items().filter(c => c.checked);
+      if (!seleccionados.length) {
+        e.preventDefault();
+        return;
+      }
+      const cantidad = seleccionados.length;
+      const texto = cantidad === 1
+        ? '¿Eliminar definitivamente este reporte? Esta acción también intentará borrar su evidencia guardada.'
+        : `¿Eliminar definitivamente ${cantidad} reportes seleccionados? Esta acción también intentará borrar sus evidencias guardadas.`;
+      if (!window.confirm(texto)) e.preventDefault();
+    });
+  }
+
+  document.querySelectorAll('.btn-eliminar-individual').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const numero = this.dataset.numero || 'este reporte';
+      if (!window.confirm(`¿Eliminar definitivamente ${numero}? Esta acción también intentará borrar su evidencia guardada.`)) return;
+
+      const f = document.createElement('form');
+      f.method = 'post';
+      f.action = '/reportes/admin/eliminar/' + encodeURIComponent(this.dataset.id);
+      document.body.appendChild(f);
+      f.submit();
+    });
+  });
+
+  actualizar();
+})();
+</script>
+
+</body>
+</html>

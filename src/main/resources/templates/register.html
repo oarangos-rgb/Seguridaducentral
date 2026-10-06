@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Cuenta | UCentral Segura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+        --primary-color: #E30613; --primary-dark: #b0000a;
+        --secondary-color: #0056b3; --text-dark: #1a1a2e;
+        --text-light: #6c757d; --white: #ffffff;
+        --light-bg: #f8f9fa;
+        --gradient-primary: linear-gradient(135deg, #E30613 0%, #ff4757 100%);
+        --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.15);
+        --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--text-dark); min-height: 100vh; display: flex; }
+    h1, h2, h3 { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+    a { text-decoration: none; color: inherit; }
+
+    .sidebar {
+        width: 50%; background: var(--gradient-primary);
+        display: flex; flex-direction: column; justify-content: center;
+        align-items: center; padding: 40px; color: var(--white);
+        position: relative; overflow: hidden;
+    }
+    .sidebar-content { position: relative; z-index: 1; text-align: center; }
+    .sidebar-logo { font-size: 2.5rem; font-weight: 700; margin-bottom: 30px; }
+    .sidebar h2 { font-size: 2.5rem; margin-bottom: 20px; line-height: 1.3; }
+    .sidebar p { font-size: 1.1rem; opacity: 0.9; line-height: 1.8; margin-bottom: 30px; }
+    .benefits-list {
+        text-align: left; background: rgba(255,255,255,0.1);
+        padding: 25px; border-radius: 15px; backdrop-filter: blur(10px);
+    }
+    .benefit-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 15px; }
+    .benefit-item:last-child { margin-bottom: 0; }
+    .benefit-item i { font-size: 1.2rem; margin-top: 3px; color: #fff; }
+    .benefit-item span { font-size: 0.95rem; line-height: 1.5; }
+
+    .main-content {
+        width: 50%; display: flex; flex-direction: column;
+        justify-content: center; align-items: center; padding: 40px;
+        background: var(--white); overflow-y: auto;
+    }
+    .register-container { width: 100%; max-width: 500px; }
+    .register-header { text-align: center; margin-bottom: 30px; }
+    .register-header h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--text-dark); }
+    .register-header p { color: var(--text-light); }
+    .back-link {
+        display: inline-flex; align-items: center; gap: 8px;
+        color: var(--primary-color); font-weight: 600;
+        margin-bottom: 25px; transition: 0.3s;
+    }
+    .back-link:hover { gap: 12px; }
+
+    .progress-steps {
+        display: flex; justify-content: space-between; margin-bottom: 30px; position: relative;
+    }
+    .progress-steps::before {
+        content: ''; position: absolute; top: 50%; left: 0; right: 0;
+        height: 2px; background: #e0e0e0; z-index: 0;
+    }
+    .step {
+        width: 40px; height: 40px; border-radius: 50%;
+        background: var(--white); border: 2px solid #e0e0e0;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; position: relative; z-index: 1; transition: 0.3s;
+    }
+    .step.active { background: var(--primary-color); border-color: var(--primary-color); color: var(--white); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark); }
+    .form-group label .required { color: var(--primary-color); }
+    .input-wrapper { position: relative; }
+    .input-wrapper i {
+        position: absolute; left: 15px; top: 50%;
+        transform: translateY(-50%); color: var(--text-light);
+    }
+    .form-control {
+        width: 100%; padding: 14px 15px 14px 45px;
+        border: 2px solid #e0e0e0; border-radius: 10px;
+        font-size: 1rem; transition: 0.3s; font-family: 'Open Sans', sans-serif;
+    }
+    .form-control:focus {
+        outline: none; border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1);
+    }
+
+    .password-strength { margin-top: 8px; }
+    .strength-bar { height: 5px; background: #e0e0e0; border-radius: 3px; overflow: hidden; margin-bottom: 5px; }
+    .strength-fill { height: 100%; width: 0; transition: 0.3s; border-radius: 3px; }
+    .strength-fill.weak { width: 33%; background: #dc3545; }
+    .strength-fill.medium { width: 66%; background: #ffc107; }
+    .strength-fill.strong { width: 100%; background: #28a745; }
+    .strength-text { font-size: 0.85rem; font-weight: 600; }
+    .strength-text.weak { color: #dc3545; }
+    .strength-text.medium { color: #ffc107; }
+    .strength-text.strong { color: #28a745; }
+
+    .checkbox-group { margin-bottom: 20px; }
+    .checkbox-wrapper { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; margin-bottom: 12px; }
+    .checkbox-wrapper input[type="checkbox"] {
+        width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-color); margin-top: 2px;
+    }
+    .checkbox-wrapper span { font-size: 0.95rem; color: var(--text-light); }
+    .checkbox-wrapper a { color: var(--primary-color); font-weight: 600; }
+
+    .btn {
+        width: 100%; padding: 16px; border: none; border-radius: 10px;
+        font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-primary {
+        background: var(--gradient-primary); color: var(--white); box-shadow: var(--shadow-md);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+    .login-link { text-align: center; margin-top: 25px; color: var(--text-light); }
+    .login-link a { color: var(--primary-color); font-weight: 600; }
+    .login-link a:hover { text-decoration: underline; }
+
+    .alert { padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-weight: 500; }
+    .alert-danger { background: #ffe6e6; color: #c00; border-left: 4px solid #c00; }
+    .alert-success { background: #e6ffe6; color: #090; border-left: 4px solid #090; }
+
+    /* Modal de éxito */
+    .success-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 2000;
+        justify-content: center; align-items: center;
+    }
+    .success-modal.show { display: flex; }
+    .modal-content {
+        background: var(--white); padding: 40px; border-radius: 20px;
+        text-align: center; max-width: 400px; animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-icon {
+        width: 80px; height: 80px; background: #28a745;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 20px;
+    }
+    .modal-icon i { font-size: 2.5rem; color: var(--white); }
+    .modal-content h2 { color: #28a745; margin-bottom: 15px; }
+    .modal-content p { color: var(--text-light); margin-bottom: 25px; }
+
+    @media (max-width: 968px) {
+        .sidebar { display: none; }
+        .main-content { width: 100%; }
+        .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-content">
+    <div class="sidebar-logo"><i class="fas fa-shield-alt"></i> UCentral Segura</div>
+    <h2>Únete a la Comunidad</h2>
+    <p>Crea tu cuenta y comienza a proteger tus datos personales hoy mismo.</p>
+    <div class="benefits-list">
+      <div class="benefit-item"><i class="fas fa-check-circle"></i><span>Acceso ilimitado a guías de ciberseguridad</span></div>
+      <div class="benefit-item"><i class="fas fa-check-circle"></i><span>Evaluación gratuita de tu nivel de riesgo</span></div>
+      <div class="benefit-item"><i class="fas fa-check-circle"></i><span>Alertas personalizadas sobre fraudes</span></div>
+      <div class="benefit-item"><i class="fas fa-check-circle"></i><span>Certificado de completación del curso</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="register-container">
+    <a th:href="@{/}" class="back-link"><i class="fas fa-arrow-left"></i> Volver al inicio</a>
+
+    <div class="register-header">
+      <h1>Crear Cuenta</h1>
+      <p>Completa el formulario para registrarte</p>
+    </div>
+
+    <div class="progress-steps">
+      <div class="step active">1</div><div class="step">2</div><div class="step">3</div>
+    </div>
+
+    <!-- Mensajes de error del servidor -->
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <form th:action="@{/auth/register}" method="post" th:object="${usuario}" id="registerForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombres <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-user"></i>
+            <input type="text" th:field="*{nombres}" class="form-control" placeholder="Tu nombre" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Apellidos <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-user"></i>
+            <input type="text" th:field="*{apellidos}" class="form-control" placeholder="Tus apellidos" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Correo Institucional <span class="required">*</span></label>
+        <div class="input-wrapper">
+          <i class="fas fa-envelope"></i>
+          <input type="email" th:field="*{email}" class="form-control" placeholder="tu.correo@ucentral.edu.co" required>
+        </div>
+        <small style="color: var(--text-light);">Debe terminar en @ucentral.edu.co</small>
+      </div>
+
+      <div class="form-group">
+        <label>Código Estudiantil <span class="required">*</span></label>
+        <div class="input-wrapper">
+          <i class="fas fa-id-card"></i>
+          <input type="text" th:field="*{codigoEstudiantil}" class="form-control" placeholder="Ej: 20241234567" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Contraseña <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock"></i>
+            <!-- ✅ CORREGIDO: Agregado th:field para enviar la contraseña -->
+            <input type="password" th:field="*{password}" id="password" class="form-control" placeholder="••••••••" required minlength="8">
+          </div>
+          <div class="password-strength">
+            <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+            <div class="strength-text" id="strengthText"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Confirmar Contraseña <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="confirmPassword" class="form-control" placeholder="••••••••" required>
+          </div>
+          <small id="passwordError" style="color: #c00; font-size: 0.85rem; display: none;">Las contraseñas no coinciden</small>
+        </div>
+      </div>
+
+      <div class="checkbox-group">
+        <label class="checkbox-wrapper">
+          <input type="checkbox" th:field="*{recibirNotificaciones}">
+          <span>Deseo recibir notificaciones sobre seguridad</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-user-plus"></i> Crear Cuenta
+      </button>
+    </form>
+
+    <div class="login-link">
+      ¿Ya tienes cuenta? <a th:href="@{/auth/login}">Inicia sesión aquí</a>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Éxito -->
+<div class="success-modal" id="successModal">
+  <div class="modal-content">
+    <div class="modal-icon"><i class="fas fa-check"></i></div>
+    <h2>¡Cuenta creada con éxito!</h2>
+    <p>Tu registro se ha completado correctamente. Serás redirigido al inicio de sesión.</p>
+    <a th:href="@{/auth/login}" class="btn btn-primary">
+      <i class="fas fa-sign-in-alt"></i> Ir a Iniciar Sesión
+    </a>
+  </div>
+</div>
+
+<script>
+  // Password strength checker
+  const passwordInput = document.getElementById('password');
+  const strengthFill = document.getElementById('strengthFill');
+  const strengthText = document.getElementById('strengthText');
+  const confirmPassword = document.getElementById('confirmPassword');
+  const passwordError = document.getElementById('passwordError');
+
+  passwordInput?.addEventListener('input', function() {
+      const password = this.value;
+      let strength = 0;
+      if (password.length >= 8) strength++;
+      if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+      if (password.match(/[0-9]/)) strength++;
+      if (password.match(/[^a-zA-Z0-9]/)) strength++;
+
+      strengthFill.className = 'strength-fill';
+      strengthText.className = 'strength-text';
+
+      if (strength <= 1) {
+          strengthFill.classList.add('weak'); strengthText.classList.add('weak'); strengthText.textContent = 'Débil';
+      } else if (strength === 2 || strength === 3) {
+          strengthFill.classList.add('medium'); strengthText.classList.add('medium'); strengthText.textContent = 'Media';
+      } else if (strength === 4) {
+          strengthFill.classList.add('strong'); strengthText.classList.add('strong'); strengthText.textContent = 'Fuerte';
+      }
+  });
+
+  // Validar coincidencia de contraseñas
+  confirmPassword?.addEventListener('input', function() {
+      if (passwordInput.value !== this.value) {
+          passwordError.style.display = 'block';
+      } else {
+          passwordError.style.display = 'none';
+      }
+  });
+
+  // Validación del formulario antes de enviar
+  document.getElementById('registerForm')?.addEventListener('submit', function(e) {
+      const email = document.querySelector('input[type="email"]').value;
+      const pass = passwordInput.value;
+      const confirmPass = confirmPassword.value;
+
+      if (!email.endsWith('@ucentral.edu.co')) {
+          e.preventDefault();
+          alert('Debes usar tu correo institucional @ucentral.edu.co');
+          return false;
+      }
+
+      if (pass.length < 8) {
+          e.preventDefault();
+          alert('La contraseña debe tener al menos 8 caracteres');
+          return false;
+      }
+
+      if (pass !== confirmPass) {
+          e.preventDefault();
+          passwordError.style.display = 'block';
+          alert('Las contraseñas no coinciden');
+          return false;
+      }
+  });
+
+  // Mostrar modal de éxito si viene del servidor (opcional, ya que el redirect lo maneja el backend)
+  // Si quieres mostrar el modal antes de redirigir, puedes descomentar esto:
+  /*
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('success') === 'true') {
+      document.getElementById('successModal').classList.add('show');
+  }
+  */
+</script>
+</body>
+</html>

@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Dashboard - UCentral Segura</title>
+
+  <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+  <link rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+
+    :root {
+        --primary-color: #E30613;
+        --secondary-color: #0056b3;
+        --text-dark: #1a1a2e;
+        --text-light: #6c757d;
+        --white: #ffffff;
+        --light-bg: #f8f9fa;
+
+        --gradient-primary:
+                linear-gradient(
+                        135deg,
+                        #E30613 0%,
+                        #ff4757 100%
+                );
+
+        --shadow-md:
+                0 5px 20px rgba(0, 0, 0, 0.15);
+
+        --shadow-lg:
+                0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+
+    body {
+        font-family: 'Open Sans', sans-serif;
+        line-height: 1.6;
+        color: var(--text-dark);
+        background: var(--light-bg);
+    }
+
+
+    h1,
+    h2,
+    h3 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+    }
+
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+
+    ul {
+        list-style: none;
+    }
+
+
+    /* =====================================================
+       SIDEBAR
+    ===================================================== */
+
+    .sidebar {
+
+        position: fixed;
+
+        left: 0;
+        top: 0;
+
+        width: 280px;
+        height: 100vh;
+
+        background: var(--white);
+
+        box-shadow: var(--shadow-md);
+
+        z-index: 1000;
+
+        overflow-y: auto;
+    }
+
+
+    .sidebar-header {
+
+        padding: 30px 20px;
+
+        border-bottom:
+                1px solid #e0e0e0;
+    }
+
+
+    .sidebar-logo {
+
+        font-size: 1.5rem;
+
+        font-weight: 700;
+
+        color: var(--text-dark);
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+    }
+
+
+    .sidebar-logo .highlight {
+
+        color: var(--primary-color);
+    }
+
+
+    /* =====================================================
+       PERFIL USUARIO
+    ===================================================== */
+
+    .user-profile {
+
+        padding: 30px 20px;
+
+        text-align: center;
+
+        border-bottom:
+                1px solid #e0e0e0;
+    }
+
+
+    .user-avatar {
+
+        width: 80px;
+
+        height: 80px;
+
+        background:
+                var(--gradient-primary);
+
+        border-radius: 50%;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        margin:
+                0 auto 15px;
+    }
+
+
+    .user-avatar i {
+
+        font-size: 2.5rem;
+
+        color: var(--white);
+    }
+
+
+    .user-name {
+
+        font-weight: 700;
+
+        color: var(--text-dark);
+
+        margin-bottom: 5px;
+    }
+
+
+    .user-email {
+
+        color: var(--text-light);
+
+        font-size: 0.9rem;
+    }
+
+
+    .user-badge {
+
+        display: inline-block;
+
+        background:
+                var(--light-bg);
+
+        padding:
+                5px 15px;
+
+        border-radius: 20px;
+
+        font-size: 0.8rem;
+
+        color: var(--primary-color);
+
+        font-weight: 600;
+
+        margin-top: 10px;
+    }
+
+
+    /* =====================================================
+       MENU
+    ===================================================== */
+
+    .sidebar-menu {
+
+        padding: 20px 0;
+    }
+
+
+    .sidebar-menu a {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 15px;
+
+        padding:
+                15px 25px;
+
+        color:
+                var(--text-light);
+
+        transition:
+                0.3s;
+
+        border-left:
+                4px solid transparent;
+    }
+
+
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+
+        background:
+                var(--light-bg);
+
+        color:
+                var(--primary-color);
+
+        border-left-color:
+                var(--primary-color);
+    }
+
+
+    .sidebar-menu a i {
+
+        width: 20px;
+
+        text-align: center;
+    }
+
+
+    /* =====================================================
+       LOGOUT
+    ===================================================== */
+
+    .sidebar-logout {
+
+        padding: 20px;
+
+        border-top:
+                1px solid #e0e0e0;
+    }
+
+
+    .sidebar-logout a {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 15px;
+
+        padding: 15px;
+
+        color:
+                var(--primary-color);
+
+        font-weight: 600;
+
+        transition:
+                0.3s;
+    }
+
+
+    .sidebar-logout a:hover {
+
+        background:
+                var(--light-bg);
+
+        border-radius: 10px;
+    }
+
+
+    /* =====================================================
+       MAIN CONTENT
+    ===================================================== */
+
+    .main-content {
+
+        margin-left: 280px;
+
+        padding: 30px;
+    }
+
+
+    .dashboard-header {
+
+        display: flex;
+
+        justify-content:
+                space-between;
+
+        align-items: center;
+
+        margin-bottom: 40px;
+    }
+
+
+    .dashboard-header h1 {
+
+        font-size: 2rem;
+
+        color:
+                var(--text-dark);
+    }
+
+
+    .header-actions {
+
+        display: flex;
+
+        gap: 15px;
+    }
+
+
+    /* =====================================================
+       BOTONES
+    ===================================================== */
+
+    .btn {
+
+        padding:
+                12px 25px;
+
+        border-radius: 10px;
+
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition:
+                0.3s;
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        border: none;
+    }
+
+
+    .btn-primary {
+
+        background:
+                var(--gradient-primary);
+
+        color:
+                var(--white);
+    }
+
+
+    .btn-primary:hover {
+
+        transform:
+                translateY(-2px);
+
+        box-shadow:
+                var(--shadow-lg);
+    }
+
+
+    .btn-outline {
+
+        background:
+                var(--white);
+
+        border:
+                2px solid #e0e0e0;
+
+        color:
+                var(--text-dark);
+    }
+
+
+    .btn-outline:hover {
+
+        border-color:
+                var(--primary-color);
+
+        color:
+                var(--primary-color);
+    }
+
+
+    /* =====================================================
+       ESTADISTICAS
+    ===================================================== */
+
+    .stats-grid {
+
+        display: grid;
+
+        grid-template-columns:
+                repeat(
+                        auto-fit,
+                        minmax(250px, 1fr)
+                );
+
+        gap: 25px;
+
+        margin-bottom: 40px;
+    }
+
+
+    .stat-card {
+
+        background:
+                var(--white);
+
+        padding: 30px;
+
+        border-radius: 15px;
+
+        box-shadow:
+                var(--shadow-md);
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 20px;
+
+        transition:
+                0.3s;
+    }
+
+
+    .stat-card:hover {
+
+        transform:
+                translateY(-5px);
+
+        box-shadow:
+                var(--shadow-lg);
+    }
+
+
+    .stat-icon {
+
+        width: 60px;
+
+        height: 60px;
+
+        border-radius: 12px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 1.5rem;
+    }
+
+
+    .stat-icon.primary {
+
+        background:
+                rgba(227, 6, 19, 0.1);
+
+        color:
+                var(--primary-color);
+    }
+
+
+    .stat-icon.success {
+
+        background:
+                rgba(40, 167, 69, 0.1);
+
+        color:
+                #28a745;
+    }
+
+
+    .stat-icon.warning {
+
+        background:
+                rgba(255, 193, 7, 0.1);
+
+        color:
+                #ffc107;
+    }
+
+
+    .stat-icon.info {
+
+        background:
+                rgba(0, 86, 179, 0.1);
+
+        color:
+                var(--secondary-color);
+    }
+
+
+    .stat-info h4 {
+
+        color:
+                var(--text-light);
+
+        font-size: 0.9rem;
+
+        font-weight: 600;
+
+        margin-bottom: 5px;
+    }
+
+
+    .stat-info p {
+
+        font-size: 1.8rem;
+
+        font-weight: 700;
+
+        color:
+                var(--text-dark);
+    }
+
+
+    /* =====================================================
+       CONTENIDO
+    ===================================================== */
+
+    .content-grid {
+
+        display: grid;
+
+        grid-template-columns:
+                2fr 1fr;
+
+        gap: 25px;
+    }
+
+
+    .card {
+
+        background:
+                var(--white);
+
+        border-radius: 15px;
+
+        box-shadow:
+                var(--shadow-md);
+
+        overflow: hidden;
+    }
+
+
+    .card-header {
+
+        padding: 25px;
+
+        border-bottom:
+                1px solid #e0e0e0;
+
+        display: flex;
+
+        justify-content:
+                space-between;
+
+        align-items: center;
+    }
+
+
+    .card-header h3 {
+
+        font-size: 1.2rem;
+
+        color:
+                var(--text-dark);
+    }
+
+
+    .card-header a {
+
+        color:
+                var(--primary-color);
+
+        font-weight: 600;
+
+        font-size: 0.9rem;
+    }
+
+
+    .card-body {
+
+        padding: 25px;
+    }
+
+
+    /* =====================================================
+       PROGRESO
+    ===================================================== */
+
+    .progress-item {
+
+        margin-bottom: 25px;
+    }
+
+
+    .progress-header {
+
+        display: flex;
+
+        justify-content:
+                space-between;
+
+        margin-bottom: 8px;
+
+        font-size: 0.9rem;
+
+        font-weight: 600;
+    }
+
+
+    .progress-bar {
+
+        width: 100%;
+
+        height: 10px;
+
+        background:
+                #e9ecef;
+
+        border-radius: 10px;
+
+        overflow: hidden;
+    }
+
+
+    .progress-fill {
+
+        height: 100%;
+
+        background:
+                var(--gradient-primary);
+
+        border-radius: 10px;
+
+        transition:
+                width 1s ease;
+    }
+
+
+    /* =====================================================
+       ACTIVIDAD
+    ===================================================== */
+
+    .activity-list {
+
+        list-style: none;
+    }
+
+
+    .activity-item {
+
+        display: flex;
+
+        align-items:
+                flex-start;
+
+        gap: 15px;
+
+        padding:
+                15px 0;
+
+        border-bottom:
+                1px solid #e0e0e0;
+    }
+
+
+    .activity-item:last-child {
+
+        border-bottom: none;
+    }
+
+
+    .activity-icon {
+
+        width: 40px;
+
+        height: 40px;
+
+        border-radius: 50%;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        flex-shrink: 0;
+    }
+
+
+    .activity-icon.success {
+
+        background:
+                rgba(40, 167, 69, 0.1);
+
+        color:
+                #28a745;
+    }
+
+
+    .activity-icon.warning {
+
+        background:
+                rgba(255, 193, 7, 0.1);
+
+        color:
+                #ffc107;
+    }
+
+
+    .activity-icon.info {
+
+        background:
+                rgba(0, 86, 179, 0.1);
+
+        color:
+                var(--secondary-color);
+    }
+
+
+    .activity-content {
+
+        flex: 1;
+    }
+
+
+    .activity-content h4 {
+
+        font-size: 0.95rem;
+
+        color:
+                var(--text-dark);
+
+        margin-bottom: 5px;
+    }
+
+
+    .activity-content p {
+
+        font-size: 0.85rem;
+
+        color:
+                var(--text-light);
+    }
+
+
+    .activity-time {
+
+        font-size: 0.8rem;
+
+        color:
+                var(--text-light);
+    }
+
+
+    /* =====================================================
+       ALERTAS
+    ===================================================== */
+
+    .alert-box {
+
+        background:
+                rgba(227, 6, 19, 0.1);
+
+        border-left:
+                4px solid var(--primary-color);
+
+        padding: 20px;
+
+        border-radius: 10px;
+
+        margin-bottom: 20px;
+    }
+
+
+    .alert-box h4 {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        color:
+                var(--primary-color);
+
+        margin-bottom: 10px;
+    }
+
+
+    .alert-box p {
+
+        color:
+                var(--text-light);
+
+        font-size: 0.95rem;
+    }
+
+
+    .alert-message {
+
+        padding:
+                15px 20px;
+
+        border-radius: 10px;
+
+        margin-bottom: 20px;
+
+        font-weight: 600;
+    }
+
+
+    .alert-message.success {
+
+        background:
+                #e6ffe6;
+
+        color:
+                #009900;
+    }
+
+
+    .alert-message.error {
+
+        background:
+                #ffe6e6;
+
+        color:
+                #cc0000;
+    }
+
+
+    /* =====================================================
+       TABLA REPORTES
+    ===================================================== */
+
+    .reportes-table {
+
+        width: 100%;
+
+        border-collapse: collapse;
+    }
+
+
+    .reportes-table th,
+    .reportes-table td {
+
+        text-align: left;
+
+        padding:
+                12px 10px;
+
+        border-bottom:
+                1px solid #e0e0e0;
+
+        font-size: 0.9rem;
+    }
+
+
+    .reportes-table th {
+
+        color:
+                var(--text-light);
+
+        font-weight: 700;
+
+        text-transform:
+                uppercase;
+
+        font-size: 0.75rem;
+    }
+
+
+    .estado-badge {
+
+        display: inline-block;
+
+        padding:
+                5px 14px;
+
+        border-radius: 20px;
+
+        font-size: 0.8rem;
+
+        font-weight: 700;
+    }
+
+
+    .estado-badge.bajo {
+
+        background:
+                rgba(47, 158, 68, 0.15);
+
+        color:
+                #2f9e44;
+    }
+
+
+    .estado-badge.medio {
+
+        background:
+                rgba(232, 163, 0, 0.18);
+
+        color:
+                #a97400;
+    }
+
+
+    .estado-badge.alto {
+
+        background:
+                rgba(214, 51, 108, 0.15);
+
+        color:
+                #d6336c;
+    }
+
+
+    .empty-state {
+
+        color:
+                var(--text-light);
+
+        text-align: center;
+
+        padding:
+                30px 0;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 1024px) {
+
+        .content-grid {
+
+            grid-template-columns:
+                    1fr;
+        }
+    }
+
+
+    @media (max-width: 768px) {
+
+        .sidebar {
+
+            transform:
+                    translateX(-100%);
+
+            transition:
+                    0.3s;
+        }
+
+
+        .sidebar.active {
+
+            transform:
+                    translateX(0);
+        }
+
+
+        .main-content {
+
+            margin-left: 0;
+        }
+
+
+        .dashboard-header {
+
+            flex-direction:
+                    column;
+
+            gap: 20px;
+
+            align-items:
+                    flex-start;
+        }
+
+
+        .header-actions {
+
+            flex-wrap: wrap;
+        }
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar">
+
+
+  <div class="sidebar-header">
+
+    <div class="sidebar-logo">
+
+      <i class="fas fa-shield-alt"></i>
+
+      UCentral<span class="highlight">Segura</span>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       PERFIL USUARIO
+       CORREGIDO PARA EVITAR "null null"
+  ===================================================== -->
+
+  <div class="user-profile">
+
+
+    <div class="user-avatar">
+
+      <i class="fas fa-user-graduate"></i>
+
+    </div>
+
+
+    <div class="user-name"
+         th:text="${session.usuario != null
+             and session.usuario.nombres != null
+             and !#strings.isEmpty(session.usuario.nombres)
+             ? session.usuario.nombres
+             + (session.usuario.apellidos != null
+             and !#strings.isEmpty(session.usuario.apellidos)
+             ? ' ' + session.usuario.apellidos
+             : '')
+             : 'Usuario'}">
+
+      Usuario
+
+    </div>
+
+
+    <div class="user-email"
+         th:text="${session.usuario != null
+             and session.usuario.email != null
+             and !#strings.isEmpty(session.usuario.email)
+             ? session.usuario.email
+             : 'email@ucentral.edu.co'}">
+
+      email@ucentral.edu.co
+
+    </div>
+
+
+    <div class="user-badge">
+
+      🎓 Estudiante Activo
+
+    </div>
+
+
+  </div>
+
+
+  <!-- =====================================================
+       MENU
+  ===================================================== -->
+
+  <nav class="sidebar-menu">
+
+
+    <a th:href="@{/dashboard}"
+       class="active">
+
+      <i class="fas fa-home"></i>
+
+      Dashboard
+
+    </a>
+
+
+    <a th:href="@{/guides}">
+
+      <i class="fas fa-book-open"></i>
+
+      Guías
+
+    </a>
+
+
+    <a th:href="@{/test}">
+
+      <i class="fas fa-clipboard-check"></i>
+
+      Test de Riesgo
+
+    </a>
+
+
+    <a th:href="@{/report}">
+
+      <i class="fas fa-exclamation-triangle"></i>
+
+      Reportar
+
+    </a>
+
+
+    <!-- RUTA CORRECTA -->
+
+    <a th:href="@{/reportes/seguimiento}">
+
+      <i class="fas fa-search"></i>
+
+      Consultar Reporte
+
+    </a>
+
+
+    <a href="#">
+
+      <i class="fas fa-certificate"></i>
+
+      Certificados
+
+    </a>
+
+
+    <a href="#">
+
+      <i class="fas fa-cog"></i>
+
+      Configuración
+
+    </a>
+
+
+    <!-- PANEL ADMIN -->
+
+    <a th:if="${session.usuario != null
+                  and session.usuario.rol == 'ADMIN'}"
+       th:href="@{/reportes/admin}">
+
+      <i class="fas fa-user-shield"></i>
+
+      Panel de Revisión
+
+    </a>
+
+
+  </nav>
+
+
+  <!-- =====================================================
+       LOGOUT
+  ===================================================== -->
+
+  <div class="sidebar-logout">
+
+    <a th:href="@{/auth/logout}">
+
+      <i class="fas fa-sign-out-alt"></i>
+
+      Cerrar Sesión
+
+    </a>
+
+  </div>
+
+
+</aside>
+
+
+<!-- =====================================================
+     CONTENIDO PRINCIPAL
+===================================================== -->
+
+<main class="main-content">
+
+
+  <!-- =====================================================
+       ENCABEZADO
+  ===================================================== -->
+
+  <div class="dashboard-header">
+
+
+    <div>
+
+
+      <!-- CORREGIDO PARA QUE NO APAREZCA NULL -->
+
+      <h1>
+
+        ¡Bienvenido,
+
+        <span th:text="${session.usuario != null
+                and session.usuario.nombres != null
+                and !#strings.isEmpty(session.usuario.nombres)
+                ? session.usuario.nombres
+                : 'Usuario'}">
+
+                    Usuario
+
+                </span>!
+
+        👋
+
+      </h1>
+
+
+      <p style="color: var(--text-light);">
+
+        Aquí está el resumen de tu actividad y progreso
+
+      </p>
+
+
+    </div>
+
+
+    <div class="header-actions">
+
+
+      <button class="btn btn-outline">
+
+        <i class="fas fa-bell"></i>
+
+        Notificaciones
+
+      </button>
+
+
+      <a th:href="@{/test}"
+         class="btn btn-primary">
+
+        <i class="fas fa-clipboard-check"></i>
+
+        Nuevo Test
+
+      </a>
+
+
+    </div>
+
+
+  </div>
+
+
+  <!-- =====================================================
+       MENSAJES
+  ===================================================== -->
+
+  <div th:if="${success}"
+       class="alert-message success"
+       th:text="${success}">
+
+  </div>
+
+
+  <div th:if="${error}"
+       class="alert-message error"
+       th:text="${error}">
+
+  </div>
+
+
+  <!-- =====================================================
+       RECORDATORIO
+  ===================================================== -->
+
+  <div class="alert-box">
+
+    <h4>
+
+      <i class="fas fa-info-circle"></i>
+
+      Recordatorio de Seguridad
+
+    </h4>
+
+
+    <p>
+
+      Has completado el 60% del curso básico.
+      ¡Completa las guías restantes para obtener tu certificado!
+
+    </p>
+
+
+  </div>
+
+
+  <!-- =====================================================
+       MIS REPORTES
+  ===================================================== -->
+
+  <div class="card"
+       style="margin-bottom: 25px;"
+       th:if="${misReportes != null}">
+
+
+    <div class="card-header">
+
+
+      <h3>
+
+        <i class="fas fa-flag"></i>
+
+        Mis Reportes de Fraude
+
+      </h3>
+
+
+      <a th:href="@{/report}">
+
+        Reportar un nuevo caso
+
+      </a>
+
+
+    </div>
+
+
+    <div class="card-body">
+
+
+      <!-- SIN REPORTES -->
+
+      <div th:if="${#lists.isEmpty(misReportes)}"
+           class="empty-state">
+
+        <p>
+
+          Aún no has enviado ningún reporte.
+
+          Si detectas algo sospechoso,
+
+          <a th:href="@{/report}"
+             style="color: var(--primary-color);
+                              font-weight: 600;">
+
+            repórtalo aquí
+
+          </a>.
+
+        </p>
+
+      </div>
+
+
+      <!-- TABLA REPORTES -->
+
+      <table class="reportes-table"
+             th:unless="${#lists.isEmpty(misReportes)}">
+
+
+        <thead>
+
+        <tr>
+
+          <th>N° Seguimiento</th>
+
+          <th>Tipo</th>
+
+          <th>Fecha</th>
+
+          <th>Riesgo detectado</th>
+
+          <th>Informe</th>
+
+        </tr>
+
+        </thead>
+
+
+        <tbody>
+
+
+        <tr th:each="r : ${misReportes}">
+
+
+          <td th:text="${r.numeroSeguimiento}">
+
+            UC-2026-0000
+
+          </td>
+
+
+          <td th:text="${r.tipoIncidente}">
+
+            phishing
+
+          </td>
+
+
+          <td th:text="${#temporals.format(
+                            r.fechaCreacion,
+                            'dd/MM/yyyy'
+                        )}">
+
+            01/01/2026
+
+          </td>
+
+
+          <td>
+
+
+                        <span class="estado-badge"
+                              th:classappend="${#strings.toLowerCase(r.nivelRiesgo)}"
+                              th:text="${r.nivelRiesgo + ' · ' + r.puntajeSeguro + '/100'}">
+
+                            BAJO
+
+                        </span>
+
+
+          </td>
+
+
+          <td style="white-space: nowrap;">
+
+            <a th:href="@{/reportes/seguimiento(numero=${r.numeroSeguimiento})}"
+               style="color: var(--primary-color); font-weight: 600; text-decoration: none; margin-right: 14px;">
+              <i class="fas fa-file-alt"></i>
+              Ver informe
+            </a>
+
+            <form th:action="@{/reportes/eliminar/{id}(id=${r.id})}"
+                  method="post"
+                  style="display: inline;"
+                  onsubmit="return confirmarEliminacion();">
+
+              <button type="submit"
+                      style="border: none; background: transparent; color: #dc3545; font-weight: 600; cursor: pointer; padding: 0;">
+                <i class="fas fa-trash-alt"></i>
+                Eliminar
+              </button>
+
+            </form>
+
+          </td>
+
+
+        </tr>
+
+
+        </tbody>
+
+
+      </table>
+
+
+    </div>
+
+
+  </div>
+
+
+  <!-- =====================================================
+       ESTADISTICAS
+  ===================================================== -->
+
+  <div class="stats-grid">
+
+
+    <div class="stat-card">
+
+
+      <div class="stat-icon primary">
+
+        <i class="fas fa-book-open"></i>
+
+      </div>
+
+
+      <div class="stat-info">
+
+        <h4>Guías Completadas</h4>
+
+        <p>6/10</p>
+
+      </div>
+
+
+    </div>
+
+
+    <div class="stat-card">
+
+
+      <div class="stat-icon success">
+
+        <i class="fas fa-check-circle"></i>
+
+      </div>
+
+
+      <div class="stat-info">
+
+        <h4>Nivel de Seguridad</h4>
+
+        <p>75%</p>
+
+      </div>
+
+
+    </div>
+
+
+    <div class="stat-card">
+
+
+      <div class="stat-icon warning">
+
+        <i class="fas fa-clock"></i>
+
+      </div>
+
+
+      <div class="stat-info">
+
+        <h4>Horas de Estudio</h4>
+
+        <p>12h</p>
+
+      </div>
+
+
+    </div>
+
+
+    <div class="stat-card">
+
+
+      <div class="stat-icon info">
+
+        <i class="fas fa-trophy"></i>
+
+      </div>
+
+
+      <div class="stat-info">
+
+        <h4>Puntos Obtenidos</h4>
+
+        <p>450</p>
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+  <!-- =====================================================
+       PROGRESO Y ACTIVIDAD
+  ===================================================== -->
+
+  <div class="content-grid">
+
+
+    <!-- PROGRESO -->
+
+    <div class="card">
+
+
+      <div class="card-header">
+
+
+        <h3>
+
+          <i class="fas fa-chart-line"></i>
+
+          Tu Progreso
+
+        </h3>
+
+
+        <a th:href="@{/guides}">
+
+          Ver todas las guías
+
+        </a>
+
+
+      </div>
+
+
+      <div class="card-body">
+
+
+        <div class="progress-item">
+
+
+          <div class="progress-header">
+
+                        <span>
+                            Verificación de Empresas
+                        </span>
+
+            <span>
+                            100%
+                        </span>
+
+          </div>
+
+
+          <div class="progress-bar">
+
+            <div class="progress-fill"
+                 style="width: 100%;">
+
+            </div>
+
+          </div>
+
+
+        </div>
+
+
+        <div class="progress-item">
+
+
+          <div class="progress-header">
+
+                        <span>
+                            Protección de Contraseñas
+                        </span>
+
+            <span>
+                            80%
+                        </span>
+
+          </div>
+
+
+          <div class="progress-bar">
+
+            <div class="progress-fill"
+                 style="width: 80%;">
+
+            </div>
+
+          </div>
+
+
+        </div>
+
+
+        <div class="progress-item">
+
+
+          <div class="progress-header">
+
+                        <span>
+                            Detección de Phishing
+                        </span>
+
+            <span>
+                            60%
+                        </span>
+
+          </div>
+
+
+          <div class="progress-bar">
+
+            <div class="progress-fill"
+                 style="width: 60%;">
+
+            </div>
+
+          </div>
+
+
+        </div>
+
+
+        <div class="progress-item">
+
+
+          <div class="progress-header">
+
+                        <span>
+                            Seguridad en Redes
+                        </span>
+
+            <span>
+                            40%
+                        </span>
+
+          </div>
+
+
+          <div class="progress-bar">
+
+            <div class="progress-fill"
+                 style="width: 40%;">
+
+            </div>
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+
+    <!-- ACTIVIDAD -->
+
+    <div class="card">
+
+
+      <div class="card-header">
+
+
+        <h3>
+
+          <i class="fas fa-history"></i>
+
+          Actividad Reciente
+
+        </h3>
+
+
+        <a href="#">
+
+          Ver todo
+
+        </a>
+
+
+      </div>
+
+
+      <div class="card-body">
+
+
+        <ul class="activity-list">
+
+
+          <li class="activity-item">
+
+
+            <div class="activity-icon success">
+
+              <i class="fas fa-check"></i>
+
+            </div>
+
+
+            <div class="activity-content">
+
+              <h4>
+                Cuenta creada
+              </h4>
+
+              <p>
+                Bienvenido a UCentral Segura
+              </p>
+
+            </div>
+
+
+            <div class="activity-time">
+
+              Hoy
+
+            </div>
+
+
+          </li>
+
+
+          <li class="activity-item">
+
+
+            <div class="activity-icon info">
+
+              <i class="fas fa-clipboard-check"></i>
+
+            </div>
+
+
+            <div class="activity-content">
+
+              <h4>
+                Test disponible
+              </h4>
+
+              <p>
+                Evalúa tu nivel de riesgo
+              </p>
+
+            </div>
+
+
+            <div class="activity-time">
+
+              Disponible
+
+            </div>
+
+
+          </li>
+
+
+        </ul>
+
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+</main>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+  document.addEventListener(
+          'DOMContentLoaded',
+          function () {
+
+              const progressFills =
+                      document.querySelectorAll(
+                              '.progress-fill'
+                      );
+
+              progressFills.forEach(
+                      fill => {
+
+                          const width =
+                                  fill.style.width;
+
+                          fill.style.width =
+                                  '0';
+
+                          setTimeout(
+                                  () => {
+
+                                      fill.style.width =
+                                              width;
+
+                                  },
+                                  500
+                          );
+
+                      }
+              );
+
+          }
+  );
+
+  function confirmarEliminacion() {
+    return confirm(
+      "¿Estás seguro de que quieres eliminar este reporte?\n\n" +
+      "Se eliminará el informe guardado y, si existe, la evidencia asociada.\n\n" +
+      "Esta acción no se puede deshacer."
+    );
+  }
+
+</script>
+
+
+</body>
+
+</html>

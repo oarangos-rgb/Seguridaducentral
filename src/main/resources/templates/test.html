@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test de Riesgo | UCentral Segura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+        --primary-color: #E30613; --primary-dark: #b0000a;
+        --secondary-color: #0056b3; --text-dark: #1a1a2e;
+        --text-light: #6c757d; --white: #ffffff;
+        --light-bg: #f8f9fa;
+        --gradient-primary: linear-gradient(135deg, #E30613 0%, #ff4757 100%);
+        --shadow-md: 0 5px 20px rgba(0,0,0,0.15);
+        --shadow-lg: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--text-dark); background: var(--light-bg); }
+    h1, h2, h3 { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+ 
+    .sidebar {
+        position: fixed; left: 0; top: 0; width: 280px; height: 100vh;
+        background: var(--white); box-shadow: var(--shadow-md);
+        z-index: 1000; overflow-y: auto;
+    }
+    .sidebar-header { padding: 30px 20px; border-bottom: 1px solid #e0e0e0; }
+    .sidebar-logo { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 10px; }
+    .sidebar-logo .highlight { color: var(--primary-color); }
+    .user-profile { padding: 30px 20px; text-align: center; border-bottom: 1px solid #e0e0e0; }
+    .user-avatar { width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; }
+    .user-avatar i { font-size: 2.5rem; color: var(--white); }
+    .user-name { font-weight: 700; color: var(--text-dark); margin-bottom: 5px; }
+    .user-email { color: var(--text-light); font-size: 0.9rem; }
+    .user-badge { display: inline-block; background: var(--light-bg); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; color: var(--primary-color); font-weight: 600; margin-top: 10px; }
+    .sidebar-menu { padding: 20px 0; }
+    .sidebar-menu a { display: flex; align-items: center; gap: 15px; padding: 15px 25px; color: var(--text-light); transition: 0.3s; border-left: 4px solid transparent; }
+    .sidebar-menu a:hover, .sidebar-menu a.active { background: var(--light-bg); color: var(--primary-color); border-left-color: var(--primary-color); }
+    .sidebar-menu a i { width: 20px; text-align: center; }
+    .sidebar-logout { position: absolute; bottom: 0; width: 100%; padding: 20px; border-top: 1px solid #e0e0e0; }
+    .sidebar-logout a { display: flex; align-items: center; gap: 15px; padding: 15px; color: var(--primary-color); font-weight: 600; transition: 0.3s; }
+    .sidebar-logout a:hover { background: var(--light-bg); border-radius: 10px; }
+ 
+    .main-content { margin-left: 280px; padding: 30px; }
+    .page-header { margin-bottom: 40px; }
+    .page-header h1 { font-size: 2rem; color: var(--text-dark); }
+    .page-header p { color: var(--text-light); margin-top: 8px; }
+ 
+    .card { background: var(--white); border-radius: 15px; box-shadow: var(--shadow-md); overflow: hidden; margin-bottom: 25px; }
+    .card-header { padding: 25px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
+    .card-header h3 { font-size: 1.2rem; color: var(--text-dark); }
+    .card-body { padding: 25px; }
+ 
+    .question-block { margin-bottom: 30px; }
+    .question-block h4 { font-size: 1rem; color: var(--text-dark); margin-bottom: 15px; font-weight: 600; }
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .option-label {
+        display: flex; align-items: center; gap: 12px;
+        padding: 15px 20px; border: 2px solid #e0e0e0;
+        border-radius: 10px; cursor: pointer; transition: 0.3s;
+    }
+    .option-label:hover { border-color: var(--primary-color); background: rgba(227,6,19,0.05); }
+    .option-label input[type="radio"] { accent-color: var(--primary-color); width: 18px; height: 18px; }
+ 
+    .btn { padding: 12px 25px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; border: none; font-size: 1rem; }
+    .btn-primary { background: var(--gradient-primary); color: var(--white); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+ 
+    .result-box { display: none; padding: 30px; border-radius: 15px; text-align: center; margin-top: 25px; }
+    .result-box.low { background: rgba(40,167,69,0.1); border: 2px solid #28a745; }
+    .result-box.medium { background: rgba(255,193,7,0.1); border: 2px solid #ffc107; }
+    .result-box.high { background: rgba(227,6,19,0.1); border: 2px solid var(--primary-color); }
+    .result-box h3 { font-size: 1.5rem; margin-bottom: 10px; }
+    .result-box.low h3 { color: #28a745; }
+    .result-box.medium h3 { color: #e0a800; }
+    .result-box.high h3 { color: var(--primary-color); }
+    .result-box p { color: var(--text-light); font-size: 1rem; }
+ 
+    .progress-bar-test { height: 12px; background: #e0e0e0; border-radius: 10px; margin: 20px 0; overflow: hidden; }
+    .progress-fill-test { height: 100%; background: var(--gradient-primary); border-radius: 10px; transition: width 0.5s ease; }
+ 
+    @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; } }
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <i class="fas fa-shield-alt"></i>
+      UCentral<span class="highlight">Segura</span>
+    </div>
+  </div>
+  <div class="user-profile">
+    <div class="user-avatar"><i class="fas fa-user-graduate"></i></div>
+    <div class="user-name" th:text="${session.usuario?.nombres + ' ' + session.usuario?.apellidos}">Usuario</div>
+    <div class="user-email" th:text="${session.usuario?.email}">email@ucentral.edu.co</div>
+    <div class="user-badge">🎓 Estudiante Activo</div>
+  </div>
+  <nav class="sidebar-menu">
+    <a th:href="@{/dashboard}"><i class="fas fa-home"></i> Dashboard</a>
+    <a th:href="@{/guides}"><i class="fas fa-book-open"></i> Guías</a>
+    <a th:href="@{/test}" class="active"><i class="fas fa-clipboard-check"></i> Test de Riesgo</a>
+    <a th:href="@{/report}"><i class="fas fa-exclamation-triangle"></i> Reportar</a>
+    <a th:href="@{/reportes/seguimiento}"><i class="fas fa-search"></i> Consultar Reporte</a>
+    <a href="#"><i class="fas fa-certificate"></i> Certificados</a>
+    <a href="#"><i class="fas fa-cog"></i> Configuración</a>
+  </nav>
+  <div class="sidebar-logout">
+    <a th:href="@{/auth/logout}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+  </div>
+</aside>
+ 
+<main class="main-content">
+  <div class="page-header">
+    <h1><i class="fas fa-clipboard-check" style="color: var(--primary-color);"></i> Test de Riesgo Digital</h1>
+    <p>Evalúa qué tan expuesto estás al compartir tus datos personales en plataformas de empleo.</p>
+  </div>
+ 
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="fas fa-shield-alt"></i> Evaluación de Seguridad Personal</h3>
+      <span style="color: var(--text-light); font-size: 0.9rem;">5 preguntas · ~3 minutos</span>
+    </div>
+    <div class="card-body">
+      <div id="progressContainer">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+          <span style="font-size: 0.85rem; color: var(--text-light);">Progreso</span>
+          <span id="progressText" style="font-size: 0.85rem; color: var(--primary-color); font-weight: 600;">0 / 5</span>
+        </div>
+        <div class="progress-bar-test"><div class="progress-fill-test" id="progressFill" style="width: 0%;"></div></div>
+      </div>
+ 
+      <form id="testForm">
+        <!-- Pregunta 1 -->
+        <div class="question-block">
+          <h4>1. ¿Publicas tu número de cédula o documento en páginas de empleo como Computrabajo o LinkedIn?</h4>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q1" value="3"> Sí, siempre lo incluyo en mi hoja de vida pública</label>
+            <label class="option-label"><input type="radio" name="q1" value="2"> A veces, dependiendo de la oferta</label>
+            <label class="option-label"><input type="radio" name="q1" value="1"> No, nunca comparto ese dato en línea</label>
+          </div>
+        </div>
+ 
+        <!-- Pregunta 2 -->
+        <div class="question-block">
+          <h4>2. Cuando una empresa te pide datos bancarios antes de una entrevista, ¿qué haces?</h4>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q2" value="3"> Los envío sin problema si el trabajo parece real</label>
+            <label class="option-label"><input type="radio" name="q2" value="2"> Los envío pero con desconfianza</label>
+            <label class="option-label"><input type="radio" name="q2" value="1"> Nunca los envío, primero verifico la empresa</label>
+          </div>
+        </div>
+ 
+        <!-- Pregunta 3 -->
+        <div class="question-block">
+          <h4>3. ¿Verificas que una página de empleo use HTTPS antes de registrarte?</h4>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q3" value="3"> No, nunca lo reviso</label>
+            <label class="option-label"><input type="radio" name="q3" value="2"> A veces lo reviso</label>
+            <label class="option-label"><input type="radio" name="q3" value="1"> Siempre lo verifico antes de ingresar datos</label>
+          </div>
+        </div>
+ 
+        <!-- Pregunta 4 -->
+        <div class="question-block">
+          <h4>4. ¿Has recibido correos sospechosos con ofertas de trabajo muy atractivas pidiendo tus datos?</h4>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q4" value="3"> Sí, y he respondido con mis datos</label>
+            <label class="option-label"><input type="radio" name="q4" value="2"> Sí, pero no he respondido</label>
+            <label class="option-label"><input type="radio" name="q4" value="1"> No, nunca me ha pasado eso</label>
+          </div>
+        </div>
+ 
+        <!-- Pregunta 5 -->
+        <div class="question-block">
+          <h4>5. ¿Usas la misma contraseña en varias plataformas de empleo o redes sociales?</h4>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q5" value="3"> Sí, uso la misma en casi todas</label>
+            <label class="option-label"><input type="radio" name="q5" value="2"> Uso algunas variaciones</label>
+            <label class="option-label"><input type="radio" name="q5" value="1"> No, cada plataforma tiene contraseña única</label>
+          </div>
+        </div>
+ 
+        <button type="button" class="btn btn-primary" onclick="calcularResultado()">
+          <i class="fas fa-chart-bar"></i> Ver mi resultado
+        </button>
+      </form>
+ 
+      <!-- Resultado -->
+      <div id="resultadoBajo" class="result-box low">
+        <i class="fas fa-check-circle" style="font-size: 3rem; color: #28a745; margin-bottom: 15px;"></i>
+        <h3>✅ Riesgo Bajo</h3>
+        <p>¡Excelente! Tienes buenas prácticas de seguridad digital. Sigue así y mantente informado con nuestras guías.</p>
+      </div>
+      <div id="resultadoMedio" class="result-box medium">
+        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #e0a800; margin-bottom: 15px;"></i>
+        <h3>⚠️ Riesgo Medio</h3>
+        <p>Tienes algunas vulnerabilidades. Te recomendamos revisar nuestras guías de ciberseguridad para mejorar tus hábitos digitales.</p>
+      </div>
+      <div id="resultadoAlto" class="result-box high">
+        <i class="fas fa-times-circle" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 15px;"></i>
+        <h3>🚨 Riesgo Alto</h3>
+        <p>Estás muy expuesto a fraudes y robo de datos. Te recomendamos urgentemente revisar nuestras guías y cambiar tus hábitos digitales.</p>
+      </div>
+    </div>
+  </div>
+</main>
+ 
+<script>
+  // Actualizar barra de progreso según respuestas
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const total = 5;
+      const respondidas = new Set(
+        [...document.querySelectorAll('input[type="radio"]:checked')].map(r => r.name)
+      ).size;
+      document.getElementById('progressFill').style.width = (respondidas / total * 100) + '%';
+      document.getElementById('progressText').textContent = respondidas + ' / ' + total;
+    });
+  });
+ 
+  function calcularResultado() {
+    const preguntas = ['q1','q2','q3','q4','q5'];
+    let total = 0;
+    let respondidas = 0;
+ 
+    preguntas.forEach(q => {
+      const sel = document.querySelector('input[name="' + q + '"]:checked');
+      if (sel) { total += parseInt(sel.value); respondidas++; }
+    });
+ 
+    if (respondidas < 5) {
+      alert('Por favor responde todas las preguntas antes de ver el resultado.');
+      return;
+    }
+ 
+    document.getElementById('resultadoBajo').style.display = 'none';
+    document.getElementById('resultadoMedio').style.display = 'none';
+    document.getElementById('resultadoAlto').style.display = 'none';
+ 
+    if (total <= 7) {
+      document.getElementById('resultadoBajo').style.display = 'block';
+    } else if (total <= 11) {
+      document.getElementById('resultadoMedio').style.display = 'block';
+    } else {
+      document.getElementById('resultadoAlto').style.display = 'block';
+    }
+ 
+    document.getElementById('resultadoBajo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+</script>
+</body>
+</html>
